@@ -10,7 +10,7 @@
 #include <array>
 #include <vector>
 
-typedef uint64_t U64;
+typedef uint64_t bitboard;
 
 class Board {
 public:
@@ -23,13 +23,13 @@ public:
   /**
    * Returns a bitboard encoding the positions of a given piece for a given color.
    */
-  U64 get_piece_positions(BoardConstants::PIECE piece, BoardConstants::COLOR color);
+  bitboard get_piece_positions(BoardConstants::PIECE piece, BoardConstants::COLOR color);
 
   // Setters:
   /**
    * Sets the bitboard encoding the positions of a given piece for a given color.
    */
-  void set_piece_positions(BoardConstants::PIECE piece, BoardConstants::COLOR color, U64 new_positions);
+  bitboard set_piece_positions(BoardConstants::PIECE piece, BoardConstants::COLOR color, bitboard new_positions);
 
   // Moves:
   
@@ -81,9 +81,12 @@ public:
    */
   void reverse_update_castle_rights(Move &move);
 
+  // Attacks:
+  
+
 private:
-  std::array<U64, 6> white_bitboards;
-  std::array<U64, 6> black_bitboards;
+  std::array<bitboard, 6> white_bitboards;
+  std::array<bitboard, 6> black_bitboards;
   std::vector<Move> white_moves;
   std::vector<Move> black_moves;
 
