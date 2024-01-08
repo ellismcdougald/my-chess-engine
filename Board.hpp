@@ -17,6 +17,12 @@ public:
   // Constructors:
   
   Board();
+
+  // Initializers:
+  /*
+   * Initializes the bitboards to the starting positions.
+   */
+  void initialize_board();
   
   // Getters:
 
