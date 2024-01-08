@@ -82,8 +82,42 @@ public:
   void reverse_update_castle_rights(Move &move);
 
   // Attacks:
-  
 
+  /**
+   * Returns a bitboard encoding the squares attacked by a pawn on a given square and of a given color.
+   */
+  bitboard get_pawn_attacks(bitboard position, COLOR color);
+
+  /**
+   * Returns a bitboard encoding the squares attacked by a pawn on a given square and of a given color.
+   */
+  bitboard get_knight_attacks(bitboard position, COLOR color);
+
+  /**
+   * Returns a bitboard encoding the squares attacked by a pawn on a given square and of a given color.
+   */
+  bitboard get_bishop_attacks(bitboard position, COLOR color);
+
+  /**
+   * Returns a bitboard encoding the squares attacked by a pawn on a given square and of a given color.
+   */
+  bitboard get_rook_attacks(bitboard position, COLOR color);
+
+  /**
+   * Returns a bitboard encoding the squares attacked by a pawn on a given square and of a given color.
+   */
+  bitboard get_queen_attacks(bitboard position, COLOR color);
+
+  /**
+   * Returns a bitboard encoding the positions attacked by a pawn on a given square and of a given color.
+   */
+  bitboard get_king_attacks(bitboard position, COLOR color);
+  
+  /**
+   * Returns a bitboard encoding the positions of the pieces of a given color that are attacking a given position.
+   */
+  bitboard get_attacks_to_position(bitboard position, COLOR color);
+    
 private:
   std::array<bitboard, 6> white_bitboards;
   std::array<bitboard, 6> black_bitboards;
