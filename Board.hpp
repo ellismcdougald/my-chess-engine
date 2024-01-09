@@ -13,6 +13,8 @@
 typedef uint64_t bitboard;
 
 class Board {
+  friend class BoardTests;
+  
 public:
   // Constructors:
   
@@ -22,7 +24,7 @@ public:
   /*
    * Initializes the bitboards to the starting positions.
    */
-  void initialize_board();
+  void initialize_board_starting_position();
   
   // Getters:
 
@@ -30,6 +32,11 @@ public:
    * Returns a bitboard encoding the positions of a given piece for a given color.
    */
   bitboard get_piece_positions(BoardConstants::PIECE piece, BoardConstants::COLOR color);
+
+  /**
+   * Returns a bitboard encoding the positions of all pieces for a given color.
+   */
+  bitboard get_all_piece_positions(BoardConstants::COLOR color);
 
   /**
    * Returns the last move made by the given color.
@@ -123,7 +130,7 @@ public:
    * Returns a bitboard encoding the positions attacked by a sliding move from a given square and color in a given direction.
    */
   bitboard get_sliding_attacks(bitboard position, BoardConstants::COLOR color, BoardConstants::DIRECTION direction);
-  
+
   /**
    * Returns a bitboard encoding the positions of the pieces of a given color that are attacking a given position.
    */
@@ -135,6 +142,30 @@ private:
   std::vector<Move> white_moves;
   std::vector<Move> black_moves;
 
+  static const bitboard FILE_A; //= 0x8080808080808080;
+  static const bitboard FILE_H; //= 0x0808080808080808;
+  static const bitboard RANK_1; //= 0xFF;
+  static const bitboard RANK_8; // 0xFF00000000000000;
+
+  static const bitboard starting_white_king_position;
+  static const bitboard starting_white_queen_position;
+  static const bitboard starting_white_rook_position;
+  static const bitboard starting_white_bishop_position;
+  static const bitboard starting_white_knight_position;
+  static const bitboard starting_white_pawn_position;
+  
+  static const bitboard starting_black_king_position;
+  static const bitboard starting_black_queen_position;
+  static const bitboard starting_black_rook_position;
+  static const bitboard starting_black_bishop_position;
+  static const bitboard starting_black_knight_position;
+  static const bitboard starting_black_pawn_position;
+
+  inline bitboard north(bitboard position) { return (position & ~RANK_8) >> 8; }
+  inline bitboard south(bitboard position) { return (position & ~RANK_1) << 8; }
+  inline bitboard east(bitboard position) { return (position & ~FILE_H) >> 1; }
+  inline bitboard west(bitboard position) { return (position & ~FILE_A) << 1; }
+
   /*
    * Color can castle if they have not yet castled and have not yet moved their king or the rook on that side.
    */
@@ -142,6 +173,9 @@ private:
   bool white_can_castle_king;
   bool black_can_castle_queen;
   bool black_can_castle_king;
+
+  // Helpers:
+  bitboard move_direction(bitboard position, BoardConstants::DIRECTION direction);
 };
 
 #endif // END GUARD
