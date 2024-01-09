@@ -31,6 +31,11 @@ public:
    */
   bitboard get_piece_positions(BoardConstants::PIECE piece, BoardConstants::COLOR color);
 
+  /**
+   * Returns the last move made by the given color.
+   */
+  Move get_last_move(BoardConstants::COLOR color);
+
   // Setters:
   /**
    * Sets the bitboard encoding the positions of a given piece for a given color.
@@ -58,11 +63,6 @@ public:
    * Undoes a given move on the board and removes the move from the moving color's move vector.
    */
   void undo_move(Move &move);
-
-  /**
-   * Returns the last move made by the given color.
-   */
-  Move get_last_move(BoardConstants::COLOR color);
 
   // Castling:
   /**
@@ -118,6 +118,11 @@ public:
    * Returns a bitboard encoding the positions attacked by a pawn on a given square and of a given color.
    */
   bitboard get_king_attacks(bitboard position, BoardConstants::COLOR color);
+
+  /**
+   * Returns a bitboard encoding the positions attacked by a sliding move from a given square and color in a given direction.
+   */
+  bitboard get_sliding_attacks(bitboard position, BoardConstants::COLOR color, BoardConstants::DIRECTION direction);
   
   /**
    * Returns a bitboard encoding the positions of the pieces of a given color that are attacking a given position.
