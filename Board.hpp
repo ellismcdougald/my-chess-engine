@@ -161,8 +161,8 @@ private:
   static const bitboard starting_black_knight_position;
   static const bitboard starting_black_pawn_position;
 
-  inline bitboard north(bitboard position) { return (position & ~RANK_8) >> 8; }
-  inline bitboard south(bitboard position) { return (position & ~RANK_1) << 8; }
+  inline bitboard north(bitboard position) { return (position & ~RANK_8) << 8; }
+  inline bitboard south(bitboard position) { return (position & ~RANK_1) >> 8; }
   inline bitboard east(bitboard position) { return (position & ~FILE_H) >> 1; }
   inline bitboard west(bitboard position) { return (position & ~FILE_A) << 1; }
 
