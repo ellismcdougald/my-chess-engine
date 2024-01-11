@@ -5,7 +5,7 @@
 
 // Initialize constants:
 const bitboard Board::FILE_A = 0x8080808080808080;
-const bitboard Board::FILE_H = 0x0808080808080808;
+const bitboard Board::FILE_H = 0x0101010101010101;
 const bitboard Board::RANK_1 = 0xFF;
 const bitboard Board::RANK_8 = 0xFF00000000000000;
 
@@ -163,25 +163,31 @@ bitboard Board::get_pawn_attacks(bitboard position, BoardConstants::COLOR color)
 bitboard Board::get_knight_attacks(bitboard position, BoardConstants::COLOR color) {}
 
 /**
- * TODO
- 
  * Calls get_sliding_attacks for the given position and color on directions NORTHWEST, NORTHEAST, SOUTHWEST, and SOUTHEAST. Returns the union of these.
  */
-bitboard Board::get_bishop_attacks(bitboard position, BoardConstants::COLOR color) {}
+bitboard Board::get_bishop_attacks(bitboard position, BoardConstants::COLOR color) {
+  return get_sliding_attacks(position, color, BoardConstants::NORTHWEST) |
+    get_sliding_attacks(position, color, BoardConstants::NORTHEAST) |
+    get_sliding_attacks(position, color, BoardConstants::SOUTHWEST) |
+    get_sliding_attacks(position, color, BoardConstants::SOUTHEAST);
+}
 
 /**
- * TODO
- 
  * Calls get_sliding_attacks for the given position and color on directions NORTH, SOUTH, EAST, and WEST. Returns the union of these.
  */
-bitboard Board::get_rook_attacks(bitboard position, BoardConstants::COLOR color) {}
+bitboard Board::get_rook_attacks(bitboard position, BoardConstants::COLOR color) {
+  return get_sliding_attacks(position, color, BoardConstants::NORTH) |
+    get_sliding_attacks(position, color, BoardConstants::SOUTH) |
+    get_sliding_attacks(position, color, BoardConstants::EAST) |
+    get_sliding_attacks(position, color, BoardConstants::WEST);
+}
 
 /**
- * TODO
- 
  * Queen moves like a bishop/rook hybrid so returns the union of get_bishop_attacks and get_rook_attacks on the same parameters.
  */
-bitboard Board::get_queen_attacks(bitboard position, BoardConstants::COLOR color) {}
+bitboard Board::get_queen_attacks(bitboard position, BoardConstants::COLOR color) {
+  return get_bishop_attacks(position, color) | get_rook_attacks(position, color);
+}
 
 /**
  * TODO
