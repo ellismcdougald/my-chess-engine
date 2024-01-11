@@ -11,6 +11,118 @@ public:
     test_get_rook_attacks();
     test_get_rook_attacks();
     test_get_queen_attacks();
+    test_get_pawn_attacks();
+    test_get_knight_attacks();
+    test_get_king_attacks();
+  }
+
+  // Test get_king_attacks:
+  /**
+   * Runs all get_king_attacks test
+   */
+  void test_get_king_attacks() {
+    test_get_king_attacks_one();
+    test_get_king_attacks_two();
+  }
+
+  void test_get_king_attacks_one() {
+    Board board;
+    bitboard king_position = 0x80000;
+
+    bitboard actual = board.get_king_attacks(king_position);
+    bitboard expected = 0x1C141C00;
+
+    assert(actual == expected);
+  };
+  
+  void test_get_king_attacks_two() {
+    Board board;
+    bitboard king_position = 1;
+
+    bitboard actual = board.get_king_attacks(king_position);
+    bitboard expected = 0x302;
+
+    assert(actual == expected);
+  };
+
+  // Test get_knight_attacks:
+  /**
+   * Runs all get_knight_attacks tests
+   */
+  void test_get_knight_attacks() {
+    test_get_knight_attacks_one();
+    test_get_knight_attacks_two();
+  }
+
+  void test_get_knight_attacks_one() {
+    Board board;
+    bitboard knight_position = 0x80000;
+
+    bitboard actual = board.get_knight_attacks(knight_position);
+    bitboard expected = 0x1422002214;
+
+    assert(actual == expected);
+  }
+
+  void test_get_knight_attacks_two() {
+    Board board;
+    bitboard knight_position = 1;
+
+    bitboard actual = board.get_knight_attacks(knight_position);
+    bitboard expected = 0x20400;
+
+    assert(actual == expected);
+  }
+
+  // Test get_pawn_attacks
+  /**
+   * Runs all get_pawn_attacks tests
+   */
+  void test_get_pawn_attacks() {
+    test_get_pawn_attacks_one();
+    test_get_pawn_attacks_two();
+    test_get_pawn_attacks_three();
+    test_get_pawn_attacks_four();
+  }
+
+  void test_get_pawn_attacks_one() {
+    Board board;
+    bitboard pawn_position = 0x80000;
+
+    bitboard actual = board.get_pawn_attacks(pawn_position, BoardConstants::WHITE);
+    bitboard expected = 0x14000000;
+
+    assert(actual == expected);
+  }
+
+  void test_get_pawn_attacks_two() {
+    Board board;
+    bitboard pawn_position = 0x80000;
+
+    bitboard actual = board.get_pawn_attacks(pawn_position, BoardConstants::BLACK);
+    bitboard expected = 0x1400;
+
+    assert(actual == expected);
+  }
+
+  void test_get_pawn_attacks_three() {
+    Board board;
+    bitboard pawn_position = 1;
+
+    bitboard actual = board.get_pawn_attacks(pawn_position, BoardConstants::WHITE);
+    bitboard expected = 0x200;
+
+    assert(actual == expected);
+  }
+
+  void test_get_pawn_attacks_four() {
+    Board board;
+    bitboard pawn_position = 1;
+
+    bitboard actual = board.get_pawn_attacks(pawn_position, BoardConstants::BLACK);
+    bitboard expected = 0;
+
+    assert(actual == expected);
   }
 
   // Test get_queen_attacks
@@ -68,7 +180,6 @@ public:
     board.set_piece_positions(BoardConstants::ROOK, BoardConstants::WHITE, white_rook_position_two);
 
     bitboard actual = board.get_rook_attacks(white_rook_position_one);
-    print_bitboard(actual);
     bitboard expected = 0x000002020202FD02;
 
     assert(actual == expected);
