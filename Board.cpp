@@ -27,6 +27,7 @@ const bitboard Board::starting_black_pawn_position = 0x00FF000000000000;
 Board::Board() {
   white_bitboards.fill(0);
   black_bitboards.fill(0);
+  initialize_lookups();
 }
 
 // Initializers:
@@ -232,6 +233,50 @@ bitboard Board::move_direction(bitboard position, BoardConstants::DIRECTION dire
   case BoardConstants::NORTHWEST: return west(north(position));
   case BoardConstants::SOUTHEAST: return east(south(position));
   case BoardConstants::SOUTHWEST: return west(south(position));
+  }
+}
+
+// Initialize Lookup Tables:
+void Board::initialize_lookups() {
+  initialize_single_pawn_pushes_lookups();
+  initialize_double_pawn_pushes_lookups();
+  initialize_pawn_attacks_lookups();
+  initialize_knight_moves_lookup();
+  initialize_king_moves_lookup();
+}
+
+void Board::initialize_single_pawn_pushes_lookups() {
+  for(bitboard position = 1; position > 0; position <<= 1) {
+    pawn_single_pushes_lookups[BoardConstants::WHITE][position] = north(position);
+    pawn_single_pushes_lookups[BoardConstants::BLACK][position] = south(position);
+  }
+}
+
+void Board::initialize_double_pawn_pushes_lookups() {
+  for(bitboard position = 0x100; position <= 0x8000; position <<= 1) {
+    pawn_double_pushes_lookups[BoardConstants::WHITE][position] = north(north(position));
+  }
+  for(bitboard position = 0x1000000000000; position <= 0x80000000000000; position <<= 1) {
+    pawn_double_pushes_lookups[BoardConstants::BLACK][position] = south(south(position));
+  }
+}
+
+void Board::initialize_pawn_attacks_lookups() {
+  for(bitboard position = 1; position > 0; position <<= 1) {
+    pawn_attacks_lookups[BoardConstants::WHITE][position] = west(north(position)) | east(north(position));
+    pawn_attacks_lookups[BoardConstants::BLACK][position] = west(south(position)) | east(south(position));
+  }
+}
+
+void Board::initialize_knight_moves_lookup() {
+  for(bitboard position = 1; position > 0; position <<= 1) {
+    knight_moves_lookup[position] = east(north(north(position))) | west(north(north(position))) | east(south(south(position))) | west(south(south(position)));
+  }
+}
+
+void Board::initialize_king_moves_lookup() {
+  for(bitboard position = 1; position > 0; position <<= 1) {
+    king_moves_lookup[position] = north(position) | east(position) | south(position) | west(position) | east(north(position)) | west(north(position)) | east(south(position)) | west(south(position));
   }
 }
 

@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <array>
 #include <vector>
+#include <map>
 
 typedef uint64_t bitboard;
 
@@ -135,7 +136,7 @@ public:
    * Returns a bitboard encoding the positions of the pieces of a given color that are attacking a given position.
    */
   bitboard get_attacks_to_position(bitboard position, BoardConstants::COLOR color);
-    
+
 private:
   std::array<bitboard, 6> white_bitboards;
   std::array<bitboard, 6> black_bitboards;
@@ -174,8 +175,49 @@ private:
   bool black_can_castle_queen;
   bool black_can_castle_king;
 
+  // Lookup Tables:
+  std::map<bitboard, bitboard> pawn_single_pushes_lookups[2];
+  std::map<bitboard, bitboard> pawn_double_pushes_lookups[2];
+  std::map<bitboard, bitboard> pawn_attacks_lookups[2];
+  std::map<bitboard, bitboard> knight_moves_lookup;
+  std::map<bitboard, bitboard> king_moves_lookup;
+
   // Helpers:
   bitboard move_direction(bitboard position, BoardConstants::DIRECTION direction);
+
+  // Initialize Lookup Tables:
+  /**
+   * Initializes all lookup tables.
+   */
+  void initialize_lookups();
+  
+  /**
+   * Initializes single pawn push lookups for white and black.
+   */
+  void initialize_single_pawn_pushes_lookups();
+
+  /**
+   * Initializes double pawn push lookups for white and black.
+   */
+  void initialize_double_pawn_pushes_lookups();
+
+  /**
+   * Initializes pawn attack lookups for white and black.
+   */
+  void initialize_pawn_attacks_lookups();
+
+  /**
+   * Initializes knight move lookup.
+   * There is a common lookup table for both white and black.
+   */
+  void initialize_knight_moves_lookup();
+
+  /**
+   * Initializes king move lookup.
+   * There is a common lookup table for both white and black.
+   */
+  void initialize_king_moves_lookup();
+
 };
 
 #endif // END GUARD
