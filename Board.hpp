@@ -103,34 +103,34 @@ public:
   bitboard get_pawn_attacks(bitboard position, BoardConstants::COLOR color);
 
   /**
-   * Returns a bitboard encoding the squares attacked by a pawn on a given square and of a given color.
+   * Returns a bitboard encoding the squares attacked by a knight on a given square.
    */
-  bitboard get_knight_attacks(bitboard position, BoardConstants::COLOR color);
+  bitboard get_knight_attacks(bitboard position);
 
   /**
-   * Returns a bitboard encoding the squares attacked by a pawn on a given square and of a given color.
+   * Returns a bitboard encoding the squares attacked by a bishop on a given square.
    */
-  bitboard get_bishop_attacks(bitboard position, BoardConstants::COLOR color);
+  bitboard get_bishop_attacks(bitboard position);
 
   /**
-   * Returns a bitboard encoding the squares attacked by a pawn on a given square and of a given color.
+   * Returns a bitboard encoding the squares attacked by a rook on a given square.
    */
-  bitboard get_rook_attacks(bitboard position, BoardConstants::COLOR color);
+  bitboard get_rook_attacks(bitboard position);
 
   /**
-   * Returns a bitboard encoding the squares attacked by a pawn on a given square and of a given color.
+   * Returns a bitboard encoding the squares attacked by a queen on a given square.
    */
-  bitboard get_queen_attacks(bitboard position, BoardConstants::COLOR color);
+  bitboard get_queen_attacks(bitboard position);
 
   /**
-   * Returns a bitboard encoding the positions attacked by a pawn on a given square and of a given color.
+   * Returns a bitboard encoding the positions attacked by a king on a given square.
    */
-  bitboard get_king_attacks(bitboard position, BoardConstants::COLOR color);
+  bitboard get_king_attacks(bitboard positionr);
 
   /**
    * Returns a bitboard encoding the positions attacked by a sliding move from a given square and color in a given direction.
    */
-  bitboard get_sliding_attacks(bitboard position, BoardConstants::COLOR color, BoardConstants::DIRECTION direction);
+  bitboard get_sliding_attacks(bitboard position, BoardConstants::DIRECTION direction);
 
   /**
    * Returns a bitboard encoding the positions of the pieces of a given color that are attacking a given position.

@@ -28,7 +28,7 @@ public:
     Board board;
     bitboard queen_position = 0x800000000;
 
-    bitboard actual = board.get_queen_attacks(queen_position, BoardConstants::BLACK);
+    bitboard actual = board.get_queen_attacks(queen_position);
     bitboard expected = 0x492A1CF71C2A4988;
 
     assert(actual == expected);
@@ -50,7 +50,7 @@ public:
     Board board;
     bitboard black_rook_position = 0x800000000;
 
-    bitboard actual = board.get_rook_attacks(black_rook_position, BoardConstants::BLACK);
+    bitboard actual = board.get_rook_attacks(black_rook_position);
     bitboard expected = 0x080808F708080808;
 
     assert(actual == expected);
@@ -67,7 +67,7 @@ public:
     board.set_piece_positions(BoardConstants::ROOK, BoardConstants::WHITE, white_rook_position_one);
     board.set_piece_positions(BoardConstants::ROOK, BoardConstants::WHITE, white_rook_position_two);
 
-    bitboard actual = board.get_rook_attacks(white_rook_position_one, BoardConstants::WHITE);
+    bitboard actual = board.get_rook_attacks(white_rook_position_one);
     print_bitboard(actual);
     bitboard expected = 0x000002020202FD02;
 
@@ -89,12 +89,11 @@ public:
   void test_get_bishop_attacks_one() {
     Board board;
     bitboard bishop_position = 0x8000000;
-    BoardConstants::COLOR color = BoardConstants::WHITE;
     
     board.set_piece_positions(BoardConstants::BISHOP,
 			      BoardConstants::WHITE,
 			      bishop_position);
-    bitboard result = board.get_bishop_attacks(bishop_position, color);
+    bitboard result = board.get_bishop_attacks(bishop_position);
     bitboard expected = 0x8041221400142241;
 
     assert(result == expected);
@@ -111,11 +110,11 @@ public:
     bitboard black_bishop_position = 0x80000000000;
 
     board.set_piece_positions(BoardConstants::BISHOP, BoardConstants::WHITE, white_bishop_position);
-    board.set_piece_positions(BoardConstants::PAWN, BoardConstants::WHITE, white_pawn_position_one);
+    board.set_piece_positions(BoardConstants::PAWN,  BoardConstants::WHITE, white_pawn_position_one);
     board.set_piece_positions(BoardConstants::PAWN, BoardConstants::WHITE, white_pawn_position_two);
-    board.set_piece_positions(BoardConstants::BISHOP, BoardConstants::BLACK, black_bishop_position);
+    board.set_piece_positions(BoardConstants::BISHOP,BoardConstants::BLACK, black_bishop_position);
 
-    bitboard result = board.get_bishop_attacks(white_bishop_position, BoardConstants::WHITE);
+    bitboard result = board.get_bishop_attacks(white_bishop_position);
     bitboard expected = 0x0000080500050800;
 
     assert(result == expected);
@@ -171,7 +170,7 @@ public:
     Board board;
     board.set_piece_positions(BoardConstants::ROOK, color, 1);
 
-    bitboard actual = board.get_sliding_attacks(position, color, direction);
+    bitboard actual = board.get_sliding_attacks(position, direction);
     bitboard expected = 0b11111110;
     
     assert(actual == expected);
@@ -189,7 +188,7 @@ public:
     board.set_piece_positions(BoardConstants::ROOK, color, 1);
     board.set_piece_positions(BoardConstants::PAWN, color, 0x20);
 
-    bitboard actual = board.get_sliding_attacks(position, color, direction);
+    bitboard actual = board.get_sliding_attacks(position, direction);
     bitboard expected = 0b111110;
 
     assert(actual == expected);
@@ -208,7 +207,7 @@ public:
     board.set_piece_positions(BoardConstants::ROOK, color, 1);
     board.set_piece_positions(BoardConstants::PAWN, BoardConstants::BLACK, 0x20);
 
-    bitboard actual = board.get_sliding_attacks(position, color, direction);
+    bitboard actual = board.get_sliding_attacks(position, direction);
     bitboard expected = 0b111110;
     
     assert(actual == expected);
@@ -225,7 +224,7 @@ public:
 			      BoardConstants::WHITE,
 			      bishop_position);
 
-    bitboard result = board.get_sliding_attacks(bishop_position, color, BoardConstants::NORTHWEST);
+    bitboard result = board.get_sliding_attacks(bishop_position, BoardConstants::NORTHWEST);
     bitboard expected = 0x8040201000000000;
 
     assert(result == expected);
@@ -242,7 +241,7 @@ public:
 			      BoardConstants::WHITE,
 			      bishop_position);
 
-    bitboard result = board.get_sliding_attacks(bishop_position, color, BoardConstants::NORTHEAST);
+    bitboard result = board.get_sliding_attacks(bishop_position, BoardConstants::NORTHEAST);
     bitboard expected = 0x0001020400000000;
 
     assert(result == expected);

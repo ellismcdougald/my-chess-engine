@@ -154,40 +154,44 @@ void Board::reverse_update_castle_rights(Move &move) {}
  
  * Gets pawn attacks for the given position and color from the lookup table.
  */
-bitboard Board::get_pawn_attacks(bitboard position, BoardConstants::COLOR color) {}
+bitboard Board::get_pawn_attacks(bitboard position, BoardConstants::COLOR color) {
+  return pawn_attacks_lookups[color][position];
+}
 
 /**
  * TODO
  
  * Gets knight attacks for the given position and color from the lookup table.
  */
-bitboard Board::get_knight_attacks(bitboard position, BoardConstants::COLOR color) {}
+bitboard Board::get_knight_attacks(bitboard position) {
+  return knight_moves_lookup[position];
+}
 
 /**
  * Calls get_sliding_attacks for the given position and color on directions NORTHWEST, NORTHEAST, SOUTHWEST, and SOUTHEAST. Returns the union of these.
  */
-bitboard Board::get_bishop_attacks(bitboard position, BoardConstants::COLOR color) {
-  return get_sliding_attacks(position, color, BoardConstants::NORTHWEST) |
-    get_sliding_attacks(position, color, BoardConstants::NORTHEAST) |
-    get_sliding_attacks(position, color, BoardConstants::SOUTHWEST) |
-    get_sliding_attacks(position, color, BoardConstants::SOUTHEAST);
+bitboard Board::get_bishop_attacks(bitboard position) {
+  return get_sliding_attacks(position, BoardConstants::NORTHWEST) |
+    get_sliding_attacks(position, BoardConstants::NORTHEAST) |
+    get_sliding_attacks(position, BoardConstants::SOUTHWEST) |
+    get_sliding_attacks(position, BoardConstants::SOUTHEAST);
 }
 
 /**
  * Calls get_sliding_attacks for the given position and color on directions NORTH, SOUTH, EAST, and WEST. Returns the union of these.
  */
-bitboard Board::get_rook_attacks(bitboard position, BoardConstants::COLOR color) {
-  return get_sliding_attacks(position, color, BoardConstants::NORTH) |
-    get_sliding_attacks(position, color, BoardConstants::SOUTH) |
-    get_sliding_attacks(position, color, BoardConstants::EAST) |
-    get_sliding_attacks(position, color, BoardConstants::WEST);
+bitboard Board::get_rook_attacks(bitboard position) {
+  return get_sliding_attacks(position, BoardConstants::NORTH) |
+    get_sliding_attacks(position, BoardConstants::SOUTH) |
+    get_sliding_attacks(position, BoardConstants::EAST) |
+    get_sliding_attacks(position, BoardConstants::WEST);
 }
 
 /**
  * Queen moves like a bishop/rook hybrid so returns the union of get_bishop_attacks and get_rook_attacks on the same parameters.
  */
-bitboard Board::get_queen_attacks(bitboard position, BoardConstants::COLOR color) {
-  return get_bishop_attacks(position, color) | get_rook_attacks(position, color);
+bitboard Board::get_queen_attacks(bitboard position) {
+  return get_bishop_attacks(position) | get_rook_attacks(position);
 }
 
 /**
@@ -195,14 +199,14 @@ bitboard Board::get_queen_attacks(bitboard position, BoardConstants::COLOR color
  
  * Gets king attacks for the given position and color from the lookup table.
  */
-bitboard Board::get_king_attacks(bitboard position, BoardConstants::COLOR color) {}
+bitboard Board::get_king_attacks(bitboard position) {}
 
 /**
  * TODO
  
  * Beginning from the start square, repeatedly move one square in the given direction until another piece is encountered. If that piece is the same color as the moving piece, exclude that bit. If it is the opposite color, include that bit.
  */
-bitboard Board::get_sliding_attacks(bitboard position, BoardConstants::COLOR color, BoardConstants::DIRECTION direction) {
+bitboard Board::get_sliding_attacks(bitboard position, BoardConstants::DIRECTION direction) {
   bitboard other_pieces = get_all_piece_positions(BoardConstants::WHITE) | get_all_piece_positions(BoardConstants::BLACK);
   
   bitboard result = 0;
