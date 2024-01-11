@@ -78,7 +78,7 @@ Move Board::get_last_move(BoardConstants::COLOR color) {
 
 // Setters:
 
-bitboard Board::set_piece_positions(BoardConstants::PIECE piece, BoardConstants::COLOR color, bitboard new_positions) {
+void Board::set_piece_positions(BoardConstants::PIECE piece, BoardConstants::COLOR color, bitboard new_positions) {
   if(color == BoardConstants::WHITE) {
     white_bitboards[piece] = new_positions;
   } else {
@@ -150,7 +150,7 @@ void Board::reverse_update_castle_rights(Move &move) {}
 // Attacks:
 
 /**
- * TODO
+ * NEEDS TEST
  
  * Gets pawn attacks for the given position and color from the lookup table.
  */
@@ -159,8 +159,8 @@ bitboard Board::get_pawn_attacks(bitboard position, BoardConstants::COLOR color)
 }
 
 /**
- * TODO
- 
+ * NEEDS TEST
+
  * Gets knight attacks for the given position and color from the lookup table.
  */
 bitboard Board::get_knight_attacks(bitboard position) {
@@ -199,7 +199,9 @@ bitboard Board::get_queen_attacks(bitboard position) {
  
  * Gets king attacks for the given position and color from the lookup table.
  */
-bitboard Board::get_king_attacks(bitboard position) {}
+bitboard Board::get_king_attacks(bitboard position) {
+  return king_moves_lookup[position];
+}
 
 /**
  * TODO

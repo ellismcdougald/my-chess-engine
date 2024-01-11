@@ -48,7 +48,7 @@ public:
   /**
    * Sets the bitboard encoding the positions of a given piece for a given color.
    */
-  bitboard set_piece_positions(BoardConstants::PIECE piece, BoardConstants::COLOR color, bitboard new_positions);
+  void set_piece_positions(BoardConstants::PIECE piece, BoardConstants::COLOR color, bitboard new_positions);
 
   // Moves:
   
