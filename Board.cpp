@@ -276,7 +276,7 @@ void Board::initialize_pawn_attacks_lookups() {
 
 void Board::initialize_knight_moves_lookup() {
   for(bitboard position = 1; position > 0; position <<= 1) {
-    knight_moves_lookup[position] = east(north(north(position))) | west(north(north(position))) | east(south(south(position))) | west(south(south(position)));
+    knight_moves_lookup[position] = east(north(north(position))) | west(north(north(position))) | east(south(south(position))) | west(south(south(position))) | north(east(east(position))) | north(west(west(position))) | south(east(east(position))) | south(west(west(position)));
   }
 }
 
