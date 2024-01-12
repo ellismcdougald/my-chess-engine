@@ -68,7 +68,7 @@ public:
   /**
    * Executes a given move on the board and pushes the move to the moving color's move vector.
    */
-  void execute_move(Move &move);
+  void execute_move(Move &move, BoardConstants::COLOR color);
 
   /**
    * Undoes a given move on the board and removes the move from the moving color's move vector.
