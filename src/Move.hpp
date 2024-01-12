@@ -23,6 +23,31 @@ public:
    */
   bitboard get_to_position();
 
+  /**
+   * Returns the move piece;
+   */
+  BoardConstants::PIECE get_move_piece();
+
+  /**
+   * Returns the capture piece;
+   */
+  BoardConstants::PIECE get_capture_piece();
+
+  /**
+   * Returns true if move is castle, false otherwise;
+   */
+  bool is_castle();
+
+
+  // Equality:
+
+  /**
+   * Returns true if two moves are the same, false otherwise.
+   */
+  bool move_equals(Move &other_move);
+
+    
+
 private:
   bitboard from_position;
   bitboard to_position;
