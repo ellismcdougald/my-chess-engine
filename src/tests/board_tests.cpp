@@ -1,5 +1,7 @@
+#include"iostream"
 #include <catch2/catch_test_macros.hpp>
 #include "../Board.hpp"
+
 
 TEST_CASE( "move_direction works properly", "[move_direction]") {
   Board board;
@@ -187,5 +189,25 @@ TEST_CASE("get_sliding_attacks works properly", "[get_sliding_attacks]") {
     bitboard expected = 0b111110;
 
     REQUIRE(actual == expected);
+  }
+}
+
+TEST_CASE("is_checked works properly", "[is_checked]") {
+  Board board;
+
+  SECTION("King on empty board is not in check") {
+    board.set_piece_positions(BoardConstants::KING, BoardConstants::WHITE, 1);
+    bool white_is_checked_actual = board.is_checked(BoardConstants::WHITE);
+
+    REQUIRE(white_is_checked_actual == false);
+  }
+
+  SECTION("Attacked king is in check") {
+    board.set_piece_positions(BoardConstants::KING, BoardConstants::WHITE, 1);
+    board.set_piece_positions(BoardConstants::ROOK, BoardConstants::BLACK, 0x08);
+
+    bool white_is_checked_actual = board.is_checked(BoardConstants::WHITE);
+
+    REQUIRE(white_is_checked_actual == true);
   }
 }
