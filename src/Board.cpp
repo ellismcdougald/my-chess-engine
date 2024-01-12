@@ -106,7 +106,7 @@ bool Board::is_move_legal(Move &move) {}
  
  * Clears the start bit of the moving piece. Sets the end bit of the moving piece. If capture, clears the bit for the captured piece.
  */
-void Board::execute_move(Move &move) {}
+void Board::execute_move(Move &move, BoardConstants::COLOR color) {}
 
 /**
  * TODO
