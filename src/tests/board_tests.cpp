@@ -1,5 +1,6 @@
 #include"iostream"
 #include <catch2/catch_test_macros.hpp>
+#include "../Move.hpp"
 #include "../Board.hpp"
 
 
@@ -211,3 +212,31 @@ TEST_CASE("is_checked works properly", "[is_checked]") {
     REQUIRE(white_is_checked_actual == true);
   }
 }
+
+// Update for new move class
+/*
+TEST_CASE("execute_move works properly", "[is_move_legal]") {
+  Board board;
+
+  SECTION("Moves white king from a8 to a7") {
+    board.set_piece_positions(BoardConstants::KING, BoardConstants::WHITE, 1);
+    Move move((bitboard) 1, (bitboard) 0x100);
+    board.execute_move(move, BoardConstants::WHITE);
+
+    REQUIRE(board.white_bitboards[BoardConstants::KING] == 0x100);
+  }
+
+  
+  SECTION("Black rook captures white queen at d4") {
+    board.set_piece_positions(BoardConstants::QUEEN, BoardConstants::WHITE, 0x10000000);
+    board.set_piece_positions(BoardConstants::ROOK, BoardConstants::BLACK, 0x1000000000000000);
+
+    Move move(0x1000000000000000, 0x10000000);
+    board.execute_move(move, BoardConstants::BLACK);
+
+    REQUIRE(board.white_bitboards[BoardConstants::QUEEN] == 0);
+    REQUIRE(board.black_bitboards[BoardConstants::ROOK] == 0x10000000);
+  }
+  
+}
+*/
