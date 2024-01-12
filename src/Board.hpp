@@ -6,6 +6,9 @@
 #ifndef BOARD_HPP // GUARD
 #define BOARD_HPP // GUARD
 
+#include "BoardConstants.hpp"
+#include "Move.hpp"
+
 #include <stdint.h>
 #include <array>
 #include <vector>
