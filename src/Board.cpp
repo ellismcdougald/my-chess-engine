@@ -3,6 +3,16 @@
 
 #include"Board.hpp"
 
+#include<iostream>
+void print_bitboard(bitboard bb) {
+  bitboard mask = (bitboard) 1 << 63;
+  for(int i = 0; i < 64; i++) {
+    std::cout << (mask & bb ? 1 : 0);
+    mask >>= 1;
+    if((i + 1) % 8 == 0) std::cout << "\n";
+  }
+}
+
 // Initialize constants:
 const bitboard Board::FILE_A = 0x8080808080808080;
 const bitboard Board::FILE_H = 0x0101010101010101;
@@ -87,11 +97,11 @@ void Board::set_piece_positions(BoardConstants::PIECE piece, BoardConstants::COL
 }
 
 /**
- * TODO
- 
  * Calls get_attacks_to_position on the color's king position. If the resulting bitboard is non-zero, then the king is in check.
  */
-bool Board::is_checked(BoardConstants::COLOR color) {}
+bool Board::is_checked(BoardConstants::COLOR color) {
+  return get_attacks_to_position(get_piece_positions(BoardConstants::KING, color), color == BoardConstants::WHITE ? BoardConstants::BLACK : BoardConstants::WHITE);
+}
 
 /**
  * TODO
@@ -150,8 +160,6 @@ void Board::reverse_update_castle_rights(Move &move) {}
 // Attacks:
 
 /**
- * NEEDS TEST
- 
  * Gets pawn attacks for the given position and color from the lookup table.
  */
 bitboard Board::get_pawn_attacks(bitboard position, BoardConstants::COLOR color) {
@@ -159,8 +167,6 @@ bitboard Board::get_pawn_attacks(bitboard position, BoardConstants::COLOR color)
 }
 
 /**
- * NEEDS TEST
-
  * Gets knight attacks for the given position and color from the lookup table.
  */
 bitboard Board::get_knight_attacks(bitboard position) {
@@ -195,8 +201,6 @@ bitboard Board::get_queen_attacks(bitboard position) {
 }
 
 /**
- * TODO
- 
  * Gets king attacks for the given position and color from the lookup table.
  */
 bitboard Board::get_king_attacks(bitboard position) {
@@ -204,8 +208,6 @@ bitboard Board::get_king_attacks(bitboard position) {
 }
 
 /**
- * TODO
- 
  * Beginning from the start square, repeatedly move one square in the given direction until another piece is encountered. If that piece is the same color as the moving piece, exclude that bit. If it is the opposite color, include that bit.
  */
 bitboard Board::get_sliding_attacks(bitboard position, BoardConstants::DIRECTION direction) {
@@ -222,11 +224,18 @@ bitboard Board::get_sliding_attacks(bitboard position, BoardConstants::DIRECTION
 }
 
 /**
- * TODO
- 
  * Call each of the get_[piece]_attacks functions for each piece and take the intersect of the result with the positions of each of the pieces of the opposing color. Return the union of these six bitboards.
  */
-bitboard Board::get_attacks_to_position(bitboard position, BoardConstants::COLOR color) {}
+bitboard Board::get_attacks_to_position(bitboard position, BoardConstants::COLOR color) {
+  bitboard attacking_kings = get_king_attacks(position) & get_piece_positions(BoardConstants::KING, color);
+  bitboard attacking_queens = get_queen_attacks(position) & get_piece_positions(BoardConstants::QUEEN, color);
+  bitboard attacking_rooks = get_rook_attacks(position) & get_piece_positions(BoardConstants::ROOK, color);
+  bitboard attacking_bishops = get_bishop_attacks(position) & get_piece_positions(BoardConstants::BISHOP, color);
+  bitboard attacking_knights = get_knight_attacks(position) & get_piece_positions(BoardConstants::KNIGHT, color);
+  bitboard attacking_pawns = get_pawn_attacks(position, color == BoardConstants::WHITE ? BoardConstants::BLACK : BoardConstants::WHITE) & get_piece_positions(BoardConstants::PAWN, color);
+
+  return attacking_kings | attacking_queens | attacking_rooks | attacking_bishops | attacking_knights | attacking_pawns;
+}
 
 // Helpers
 bitboard Board::move_direction(bitboard position, BoardConstants::DIRECTION direction) {
