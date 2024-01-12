@@ -3,6 +3,17 @@
 #include "../Move.hpp"
 #include "../Board.hpp"
 
+/*
+void print_bitboard(bitboard bb) {
+  bitboard mask = (bitboard) 1 << 63;
+  for(int i = 0; i < 64; i++) {
+    std::cout << (mask & bb ? 1 : 0);
+    mask >>= 1;
+    if((i + 1) % 8 == 0) std::cout << "\n";
+  }
+}
+*/
+
 
 TEST_CASE( "move_direction works properly", "[move_direction]") {
   Board board;
@@ -193,6 +204,47 @@ TEST_CASE("get_sliding_attacks works properly", "[get_sliding_attacks]") {
   }
 }
 
+TEST_CASE("get_attacks_to_position works properly", "[get_attacks_to_position]") {
+  Board board;
+  // Place white rook on h1
+  board.set_piece_positions(BoardConstants::ROOK, BoardConstants::WHITE, 1);
+  // Place white queen on a8
+  board.set_piece_positions(BoardConstants::QUEEN, BoardConstants::WHITE, 0x8000000000000000);
+  // Place white pawn on g7
+  board.set_piece_positions(BoardConstants::PAWN, BoardConstants::WHITE, 0x2000000000000);
+
+  SECTION("h8 is attacked by all three pieces") {
+    bitboard attacks_to_position = board.get_attacks_to_position(0x100000000000000, BoardConstants::WHITE);
+    bitboard expected = 0x8002000000000001;
+    
+    REQUIRE(attacks_to_position == expected);
+  }
+
+  SECTION("a1 is attacked by rook and queen") {
+    bitboard attacks_to_position = board.get_attacks_to_position(0x80, BoardConstants::WHITE);
+    bitboard expected = 0x8000000000000001;
+
+    
+    REQUIRE(attacks_to_position == expected);
+  }
+
+  SECTION("g2 is attacked by queen") {
+    bitboard attacks_to_position = board.get_attacks_to_position(0x200, BoardConstants::WHITE);
+    bitboard expected = 0x8000000000000000;
+    
+    REQUIRE(attacks_to_position == expected);
+  }
+
+  SECTION("d4 is not attacked") {
+    bitboard attacks_to_position = board.get_attacks_to_position(0x10000000, BoardConstants::WHITE);
+    bitboard expected = 0;
+    
+    REQUIRE(attacks_to_position == expected);
+  }
+  
+}
+
+
 TEST_CASE("is_checked works properly", "[is_checked]") {
   Board board;
 
@@ -212,6 +264,7 @@ TEST_CASE("is_checked works properly", "[is_checked]") {
     REQUIRE(white_is_checked_actual == true);
   }
 }
+
 
 // Update for new move class
 /*
