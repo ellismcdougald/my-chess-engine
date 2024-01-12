@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.2)
 project(ChessEngine VERSION 1.0)
+
+set (CMAKE_CXX_FLAGS "-Dprivate=public")
+
 add_executable(main main.cpp)
 
 Include(FetchContent)
@@ -12,5 +15,8 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(Catch2)
 
-add_executable(tests test.cpp)
+add_executable(board_tests tests/board_tests.cpp Board.cpp)
+target_link_libraries(board_tests PRIVATE Catch2::Catch2WithMain)
+
+add_executable(tests tests/tests.cpp Board.cpp)
 target_link_libraries(tests PRIVATE Catch2::Catch2WithMain)
