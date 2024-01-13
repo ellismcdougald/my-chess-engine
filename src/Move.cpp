@@ -7,7 +7,7 @@ Move::Move(bitboard from, bitboard to, BoardConstants::PIECE move_p, BoardConsta
   from_position = from;
   to_position = to;
   move_piece = move_p;
-  capture_p = capture_piece;
+  capture_piece = capture_p;
   castle = is_castle;
 }
 
