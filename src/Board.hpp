@@ -63,7 +63,7 @@ public:
   /**
    * Returns true if the given move is legal (i.e. does not place the moving player's king in check), false otherwise.
    */
-  bool is_move_legal(Move &move);
+  bool is_move_legal(Move &move, BoardConstants::COLOR color);
 
   /**
    * Executes a given move on the board and pushes the move to the moving color's move vector.
@@ -73,7 +73,7 @@ public:
   /**
    * Undoes a given move on the board and removes the move from the moving color's move vector.
    */
-  void undo_move(Move &move);
+  void undo_move(Move &move, BoardConstants::COLOR color);
 
   // Castling:
   /**
