@@ -112,14 +112,11 @@ bool Board::is_checked(BoardConstants::COLOR color) {
 bool Board::is_move_legal(Move &move) {}
 
 /**
- * TODO
- 
  * Clears the start bit of the moving piece. Sets the end bit of the moving piece. If capture, clears the bit for the captured piece.
  */
 void Board::execute_move(Move &move, BoardConstants::COLOR color) {
   BoardConstants::PIECE move_piece = move.get_move_piece();
   BoardConstants::PIECE capture_piece = move.get_capture_piece();
-
   bitboard old_position = move.get_from_position();
   bitboard new_position = move.get_to_position();
 
@@ -133,12 +130,23 @@ void Board::execute_move(Move &move, BoardConstants::COLOR color) {
 }
 
 /**
- * TODO
- 
  * Performs the opposite of execute_move.
  * Sets the start bit of the moving piece. Clears the end bit of the moving piece. If capture, set the bit for the captured piece.
  */
-void Board::undo_move(Move &move) {}
+void Board::undo_move(Move &move, BoardConstants::COLOR color) {
+  BoardConstants::PIECE move_piece = move.get_move_piece();
+  BoardConstants::PIECE capture_piece = move.get_capture_piece();
+  bitboard old_position = move.get_from_position();
+  bitboard new_position = move.get_to_position();
+
+  bitboard* move_piece_bitboard = color == BoardConstants::WHITE ? &white_bitboards[move_piece] : &black_bitboards[move_piece];
+  *move_piece_bitboard ^= (old_position | new_position);
+
+  if(capture_piece != BoardConstants::NONE) {
+    bitboard *capture_piece_bitboard = color == BoardConstants::WHITE ? &black_bitboards[capture_piece] : &white_bitboards[capture_piece];
+    *capture_piece_bitboard |= new_position;
+  }
+}
 
 // Castling:
 
