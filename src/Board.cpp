@@ -109,7 +109,13 @@ bool Board::is_checked(BoardConstants::COLOR color) {
  * Executes the move, checks if the moving color's king is in check, then undoes the move.
  * If moving color's king is in check, return false.
  */
-bool Board::is_move_legal(Move &move) {}
+bool Board::is_move_legal(Move &move, BoardConstants::COLOR color) {
+  execute_move(move, color);
+  bool king_in_check = is_checked(color);
+  undo_move(move, color);
+
+  return !king_in_check;
+}
 
 /**
  * Clears the start bit of the moving piece. Sets the end bit of the moving piece. If capture, clears the bit for the captured piece.
