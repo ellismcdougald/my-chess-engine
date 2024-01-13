@@ -311,3 +311,38 @@ TEST_CASE("undo_move works properly", "[undo_move]") {
   }
 }
 
+TEST_CASE("is_move_legal works properly", "[is_move_legal]") {
+  Board board;
+
+  SECTION("king move on empty board is legal") {
+    board.set_piece_positions(BoardConstants::KING, BoardConstants::WHITE, 1);
+    Move move(1, 0x100, BoardConstants::KING, BoardConstants::NONE, false);
+    bool move_legal = board.is_move_legal(move, BoardConstants::WHITE);
+
+    REQUIRE(move_legal == true);
+  }
+
+  SECTION("king move into check is illegal") {
+    board.set_piece_positions(BoardConstants::KING, BoardConstants::WHITE, 1);
+    board.set_piece_positions(BoardConstants::QUEEN, BoardConstants::BLACK, 0x8000);
+    Move move(1, 0x100, BoardConstants::KING, BoardConstants::NONE, false);
+    
+    bool move_legal = board.is_move_legal(move, BoardConstants::WHITE);
+
+    REQUIRE(move_legal == false);
+  }
+
+  SECTION("moving pinned knight is illegal") {
+    board.set_piece_positions(BoardConstants::KING, BoardConstants::WHITE, 8);
+    board.set_piece_positions(BoardConstants::KNIGHT, BoardConstants::WHITE, 0x200000);
+    board.set_piece_positions(BoardConstants::BISHOP, BoardConstants::BLACK, 0x40000000);
+
+    Move move(0x200000, 0x8000000, BoardConstants::KNIGHT, BoardConstants::NONE, false);
+
+    bool move_legal = board.is_move_legal(move, BoardConstants::WHITE);
+
+    REQUIRE(move_legal == false);
+  }
+}
+
+
