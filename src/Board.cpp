@@ -4,14 +4,6 @@
 #include"Board.hpp"
 
 #include<iostream>
-void print_bitboard(bitboard bb) {
-  bitboard mask = (bitboard) 1 << 63;
-  for(int i = 0; i < 64; i++) {
-    std::cout << (mask & bb ? 1 : 0);
-    mask >>= 1;
-    if((i + 1) % 8 == 0) std::cout << "\n";
-  }
-}
 
 // Initialize constants:
 const bitboard Board::FILE_A = 0x8080808080808080;
@@ -147,6 +139,12 @@ void Board::execute_move(Move &move, BoardConstants::COLOR color) {
   }
 
   update_castle_rights(move, color);
+
+  if(color == BoardConstants::WHITE) {
+    white_moves.push_back(move);
+  } else {
+    black_moves.push_back(move);
+  }
 }
 
 /**
@@ -168,6 +166,12 @@ void Board::undo_move(Move &move, BoardConstants::COLOR color) {
   }
 
   reverse_update_castle_rights();
+
+  if(color == BoardConstants::WHITE) {
+    white_moves.pop_back();
+  } else {
+    black_moves.pop_back();
+  }
 }
 
 // Castling:
