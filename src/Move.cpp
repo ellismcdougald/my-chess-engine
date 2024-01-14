@@ -1,7 +1,18 @@
 #ifndef MOVE_CPP // GUARD
 #define MOVE_CPP // GUARD
 
+#include<iostream>
 #include"Move.hpp"
+
+void print_bitboard(bitboard bb) {
+  bitboard mask = (bitboard) 1 << 63;
+  for(int i = 0; i < 64; i++) {
+    std::cout << (mask & bb ? 1 : 0);
+    mask >>= 1;
+    if((i + 1) % 8 == 0) std::cout << "\n";
+  }
+}
+
 
 Move::Move(bitboard from, bitboard to, BoardConstants::PIECE move_p, BoardConstants::PIECE capture_p, bool is_castle) {
   from_position = from;
@@ -38,5 +49,18 @@ bool Move::move_equals(Move &other_move) {
     capture_piece == other_move.get_capture_piece() &&
     castle == other_move.is_castle();
 }
+
+bool Move::is_double_pawn_push(BoardConstants::COLOR color) {
+   if(move_piece == BoardConstants::PAWN) {
+    if(color == BoardConstants::WHITE) {
+      return to_position == (from_position << 16);
+    } else {
+      return to_position == (from_position >> 16);
+    }
+  }
+  return false;
+}
+  
+  
 
 #endif // END GUARD

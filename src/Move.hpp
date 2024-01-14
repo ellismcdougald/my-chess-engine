@@ -38,7 +38,6 @@ public:
    */
   bool is_castle();
 
-
   // Equality:
 
   /**
@@ -46,7 +45,8 @@ public:
    */
   bool move_equals(Move &other_move);
 
-    
+  // Move type:
+  bool is_double_pawn_push(BoardConstants::COLOR color);
 
 private:
   bitboard from_position;
