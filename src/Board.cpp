@@ -38,6 +38,12 @@ Board::Board() {
   white_bitboards.fill(0);
   black_bitboards.fill(0);
   initialize_lookups();
+
+  for(int i = 0; i < 2; i++) {
+    for(int j = 0; j < 2; j++) {
+      can_castle[i][j] = true;
+    }
+  }
 }
 
 // Initializers:
@@ -96,6 +102,14 @@ void Board::set_piece_positions(BoardConstants::PIECE piece, BoardConstants::COL
   }
 }
 
+void Board::set_can_castle_queen_side(BoardConstants::COLOR color, bool new_can_castle) {
+  can_castle[color][0] = new_can_castle;
+}
+
+void Board::set_can_castle_king_side(BoardConstants::COLOR color, bool new_can_castle) {
+  can_castle[color][1] = new_can_castle;
+}
+
 /**
  * Calls get_attacks_to_position on the color's king position. If the resulting bitboard is non-zero, then the king is in check.
  */
@@ -104,8 +118,6 @@ bool Board::is_checked(BoardConstants::COLOR color) {
 }
 
 /**
- * TODO
- 
  * Executes the move, checks if the moving color's king is in check, then undoes the move.
  * If moving color's king is in check, return false.
  */
@@ -133,6 +145,8 @@ void Board::execute_move(Move &move, BoardConstants::COLOR color) {
     bitboard *capture_piece_bitboard = color == BoardConstants::WHITE ? &black_bitboards[capture_piece] : &white_bitboards[capture_piece];
     *capture_piece_bitboard &= ~new_position;
   }
+
+  update_castle_rights(move, color);
 }
 
 /**
@@ -152,38 +166,58 @@ void Board::undo_move(Move &move, BoardConstants::COLOR color) {
     bitboard *capture_piece_bitboard = color == BoardConstants::WHITE ? &black_bitboards[capture_piece] : &white_bitboards[capture_piece];
     *capture_piece_bitboard |= new_position;
   }
+
+  reverse_update_castle_rights();
 }
 
 // Castling:
 
 bool Board::can_castle_queen(BoardConstants::COLOR color) {
-  return color == BoardConstants::WHITE ? white_can_castle_queen : black_can_castle_queen;
+  return can_castle[color][0];
 }
 
 bool Board::can_castle_king(BoardConstants::COLOR color) {
-  return color == BoardConstants::WHITE ? white_can_castle_king : black_can_castle_king;
+  return can_castle[color][1];
 }
 
 /**
- * TODO
- 
  * Checks move to see if king or rook is moved.
  * If king moves, set can_castle_queen and can_castle_king for that color to false.
  * If queen side rook moves, set can_castle_queen for that color to false.
  * If king side rook moves, set can_castle_king for that color to false.
  */
-void Board::update_castle_rights(Move &move) {}
+void Board::update_castle_rights(Move &move, BoardConstants::COLOR color) {
+  for(int i = 0; i < 2; i++) {
+    for(int j = 0; j < 2; j++) {
+      previous_can_castle[i][j] = can_castle[i][j];
+    }
+  }
+  
+  BoardConstants::PIECE move_piece = move.get_move_piece();
+  bitboard from_position = move.get_from_position();
+
+  if(move_piece == BoardConstants::KING) {
+    can_castle[color][0] = false;
+    can_castle[color][1] = false;
+  } else if(move_piece == BoardConstants::ROOK) {
+    if(from_position & 1) {
+      can_castle[color][1] = false;
+    } else if(from_position & 0x80) {
+      can_castle[color][0] = false;
+    }
+  }
+}
  
 /**
- * TODO
- 
- * DIFFICULT IMPLEMENTATION
- * King could be moved off start square, returned to start square, then moved off start square again. This function should not set castle rights back to true if the third move is undone.
- * So we would need to track whether castle rights were still valid beforehand somehow.
-
- * Is this function neccessary? Castle rights could be determined by the move list (but this isn't most efficient). Could additional member variables simplify the process?
+ * Copies previous_can_castle into can_castle.
  */
-void Board::reverse_update_castle_rights(Move &move) {}
+void Board::reverse_update_castle_rights() {
+  for(int i = 0; i < 2; i++) {
+    for(int j = 0; j < 2; j++) {
+      can_castle[i][j] = previous_can_castle[i][j];
+    }
+  }
+}
 
 // Attacks:
 
@@ -322,7 +356,6 @@ void Board::initialize_king_moves_lookup() {
     king_moves_lookup[position] = north(position) | east(position) | south(position) | west(position) | east(north(position)) | west(north(position)) | east(south(position)) | west(south(position));
   }
 }
-
 
 #endif // END GUARD
 
