@@ -6,6 +6,10 @@
 #ifndef MOVEGENERATOR_HPP // GUARD
 #define MOVEGENERATOR_HPP // GUARD
 
+#include"BoardConstants.hpp"
+#include"Board.hpp"
+#include"Move.hpp"
+
 #include <stdint.h>
 #include <vector>
 
@@ -74,6 +78,9 @@ public:
    * Generates a list of pseudo-legal en passant pawn moves.
    */
   std::vector<Move> generate_pseudo_legal_en_passant_moves(Board &board, BoardConstants::COLOR color);
+
+  // Printers:
+  void print_bitboard(bitboard bb);
 
 private:
 
