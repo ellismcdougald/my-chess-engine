@@ -345,4 +345,40 @@ TEST_CASE("is_move_legal works properly", "[is_move_legal]") {
   }
 }
 
+TEST_CASE("tests castle rights", "[castle]") {
+  Board board;
 
+  SECTION("white and black can castle either way on unaltered board") {
+    REQUIRE(board.can_castle_queen(BoardConstants::WHITE) == true);
+    REQUIRE(board.can_castle_king(BoardConstants::WHITE) == true);
+    REQUIRE(board.can_castle_queen(BoardConstants::BLACK) == true);
+    REQUIRE(board.can_castle_king(BoardConstants::BLACK) == true);
+  }
+
+  SECTION("white king side rook moves off start square, then moves back. white can not castle king side but can still castle queen side") {
+    board.set_piece_positions(BoardConstants::KING, BoardConstants::WHITE, 8);
+    board.set_piece_positions(BoardConstants::ROOK, BoardConstants::WHITE, 1);
+
+    Move move_one(1, 0x100, BoardConstants::ROOK, BoardConstants::NONE, false);
+    board.execute_move(move_one, BoardConstants::WHITE);
+    Move move_two(0x100, 1, BoardConstants::ROOK, BoardConstants::NONE, false);
+    board.execute_move(move_two, BoardConstants::WHITE);
+
+    REQUIRE(board.can_castle_king(BoardConstants::WHITE) == false);
+    REQUIRE(board.can_castle_queen(BoardConstants::WHITE) == true);
+    REQUIRE(board.can_castle_king(BoardConstants::BLACK) == true);
+    REQUIRE(board.can_castle_queen(BoardConstants::BLACK) == true);
+  }
+
+  SECTION("black king moves off starting square. black can not castle either side") {
+    board.set_piece_positions(BoardConstants::KING, BoardConstants::BLACK, 0x800000000000000);
+
+    Move move(0x800000000000000, 0x400000000000000, BoardConstants::KING, BoardConstants::NONE, false);
+    board.execute_move(move, BoardConstants::BLACK);
+
+    REQUIRE(board.can_castle_king(BoardConstants::WHITE) == true);
+    REQUIRE(board.can_castle_queen(BoardConstants::WHITE) == true);
+    REQUIRE(board.can_castle_king(BoardConstants::BLACK) == false);
+    REQUIRE(board.can_castle_queen(BoardConstants::BLACK) == false);
+  }
+}
