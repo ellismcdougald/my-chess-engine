@@ -53,6 +53,16 @@ public:
    */
   void set_piece_positions(BoardConstants::PIECE piece, BoardConstants::COLOR color, bitboard new_positions);
 
+  /**
+   * Sets whether the given color can castle queen side.
+   */
+  void set_can_castle_queen_side(BoardConstants::COLOR color, bool new_can_castle);
+
+  /**
+   * Sets whether the given color can castle king side.
+   */
+  void set_can_castle_king_side(BoardConstants::COLOR color, bool new_can_castle);
+
   // Moves:
   
   /**
@@ -90,13 +100,13 @@ public:
    * Updates castle rights if neccessary (if the king or one of the rooks is moved from the starting squares).
    * Called by execute_move.
    */
-  void update_castle_rights(Move &move);
+  void update_castle_rights(Move &move, BoardConstants::COLOR color);
 
   /**
    * Reverses an update to castle rights if neccessary (if the king or one of the rooks was moved from the starting squares).
    * Called by undo_move.
    */
-  void reverse_update_castle_rights(Move &move);
+  void reverse_update_castle_rights();
 
   // Attacks:
 
@@ -171,12 +181,18 @@ private:
   inline bitboard west(bitboard position) { return (position & ~FILE_A) << 1; }
 
   /*
-   * Color can castle if they have not yet castled and have not yet moved their king or the rook on that side.
+   * can_castle[0][0]: white queen side
+   * can_castle[0][1]: white king side
+   * can_castle[1][0]: black queen side
+   * can_castle[1][1]: black king side
    */
-  bool white_can_castle_queen;
-  bool white_can_castle_king;
-  bool black_can_castle_queen;
-  bool black_can_castle_king;
+  bool can_castle[2][2];
+
+  /*
+   * Need this in order to undo updates to castle rights for undo_move.
+   * Same format as can_castle.
+   */
+  bool previous_can_castle[2][2];
 
   // Lookup Tables:
   std::map<bitboard, bitboard> pawn_single_pushes_lookups[2];
