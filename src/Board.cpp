@@ -84,6 +84,24 @@ Move Board::get_last_move(BoardConstants::COLOR color) {
   }
 }
 
+/**
+ * Goes through the piece bitboards for the given color and looks for a set bit at the given position.
+ */
+BoardConstants::PIECE Board::get_piece_at_position(bitboard position, BoardConstants::COLOR color) {
+  for(int i = 0; i < 6; i++) {
+    if(color == BoardConstants::WHITE) {
+      if(white_bitboards[i] & position) {
+	return get_piece_from_index(i);
+      }
+    } else {
+      if(black_bitboards[i] & position) {
+	return get_piece_from_index(i);
+      }
+    }
+  }
+  return BoardConstants::NONE;
+}
+
 // Setters:
 
 void Board::set_piece_positions(BoardConstants::PIECE piece, BoardConstants::COLOR color, bitboard new_positions) {
@@ -226,6 +244,20 @@ void Board::reverse_update_castle_rights() {
 // Attacks:
 
 /**
+ * Returns a bitbaord encoding the eligible single push square for a pawn on a given square and of a given color.
+ */
+bitboard Board::get_pawn_single_push(bitboard position, BoardConstants::COLOR color) {
+  return pawn_single_pushes_lookups[color][position];
+}
+
+/**
+ * Returns a bitbaord encoding the eligible double push square for a pawn on a given square and of a given color.
+ */
+bitboard Board::get_pawn_double_push(bitboard position, BoardConstants::COLOR color) {
+  return pawn_double_pushes_lookups[color][position];
+}
+
+/**
  * Gets pawn attacks for the given position and color from the lookup table.
  */
 bitboard Board::get_pawn_attacks(bitboard position, BoardConstants::COLOR color) {
@@ -314,6 +346,18 @@ bitboard Board::move_direction(bitboard position, BoardConstants::DIRECTION dire
   case BoardConstants::NORTHWEST: return west(north(position));
   case BoardConstants::SOUTHEAST: return east(south(position));
   case BoardConstants::SOUTHWEST: return west(south(position));
+  }
+}
+
+BoardConstants::PIECE Board::get_piece_from_index(int index) {
+  switch(index) {
+  case 0: return BoardConstants::PAWN;
+  case 1: return BoardConstants::KNIGHT;
+  case 2: return BoardConstants::BISHOP;
+  case 3: return BoardConstants::ROOK;
+  case 4: return BoardConstants::QUEEN;
+  case 5: return BoardConstants::KING;
+  case 6: return BoardConstants::NONE;
   }
 }
 

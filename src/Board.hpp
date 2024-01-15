@@ -47,6 +47,11 @@ public:
    */
   Move get_last_move(BoardConstants::COLOR color);
 
+  /**
+   * Returns the piece at a given position for a given color.
+   */
+  BoardConstants::PIECE get_piece_at_position(bitboard position, BoardConstants::COLOR color);
+
   // Setters:
   /**
    * Sets the bitboard encoding the positions of a given piece for a given color.
@@ -109,6 +114,16 @@ public:
   void reverse_update_castle_rights();
 
   // Attacks:
+
+  /**
+   * Returns a bitbaord encoding the eligible single push square for a pawn on a given square and of a given color.
+   */
+  bitboard get_pawn_single_push(bitboard position, BoardConstants::COLOR color);
+
+  /**
+   * Returns a bitbaord encoding the eligible double push square for a pawn on a given square and of a given color.
+   */
+  bitboard get_pawn_double_push(bitboard position, BoardConstants::COLOR color);
 
   /**
    * Returns a bitboard encoding the squares attacked by a pawn on a given square and of a given color.
@@ -203,6 +218,7 @@ private:
 
   // Helpers:
   bitboard move_direction(bitboard position, BoardConstants::DIRECTION direction);
+  BoardConstants::PIECE get_piece_from_index(int index);
 
   // Initialize Lookup Tables:
   /**
