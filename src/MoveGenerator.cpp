@@ -37,12 +37,29 @@ std::vector<Move> MoveGenerator::generate_pseudo_legal_moves(Board &board, Board
 // Piece move generation:
 
 /**
- * TODO
+ * TEST
  
  * Receives a bitboard encoding the positions of the pawns. For each pawn, get eligible single push positions, double push positions, and attack positions (using Board methods and other piece locations). Then calls generate_pseudo_legal_en_passant_moves and appends these moves.
  */
 std::vector<Move> MoveGenerator::generate_pawn_pseudo_legal_moves(Board &board, BoardConstants::COLOR color) {
   std::vector<Move> pawn_pseudo_legal_moves;
+
+  bitboard pawn_positions = board.get_piece_positions(BoardConstants::PAWN, color);
+  bitboard opponent_positions = board.get_all_piece_positions(color == BoardConstants::WHITE ? BoardConstants::BLACK : BoardConstants::WHITE);
+  
+  bitboard push_destinations, attack_destinations;
+  bitboard temp_position;
+  for(bitboard mask = 1; mask > 0; mask <<= 1) {
+    temp_position = pawn_positions & mask;
+    if(temp_position) {
+      // pushes
+      push_destinations = board.get_pawn_single_push(temp_position, color) | board.get_pawn_double_push(temp_position, color) & ~opponent_positions;
+      append_non_castle_moves_from_destinations(push_destinations, temp_position, BoardConstants::PAWN, false, pawn_pseudo_legal_moves, board, color);
+      // attacks
+      attack_destinations = board.get_pawn_attacks(temp_position, color) & opponent_positions;
+      append_non_castle_moves_from_destinations(attack_destinations, temp_position, BoardConstants::PAWN, true, pawn_pseudo_legal_moves, board, color);
+    }
+  }
 
   return pawn_pseudo_legal_moves;
 }
@@ -148,6 +165,21 @@ void MoveGenerator::print_bitboard(bitboard bb) {
     std::cout << (mask & bb ? 1 : 0);
     mask >>= 1;
     if((i + 1) % 8 == 0) std::cout << "\n";
+  }
+}
+
+// Helpers:
+/**
+ * For each set bit in destinations, creates the appropriate move and appends to the move vector.
+ */
+void MoveGenerator::append_non_castle_moves_from_destinations(bitboard destinations, bitboard start_position, BoardConstants::PIECE move_piece, bool capture, std::vector<Move> move_vector, Board& board, BoardConstants::COLOR color) {
+  bitboard temp_position;
+  BoardConstants::PIECE capture_piece;
+  for(bitboard mask = 1; mask > 0; mask <<=1) {
+    temp_position = destinations & mask;
+    capture_piece = capture ? board.get_piece_at_position(temp_position, color == BoardConstants::WHITE ? BoardConstants::BLACK : BoardConstants::WHITE) : BoardConstants::NONE;
+    Move move(start_position, temp_position, move_piece, capture_piece, false);
+    move_vector.push_back(move);
   }
 }
 
