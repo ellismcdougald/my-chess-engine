@@ -172,14 +172,16 @@ void MoveGenerator::print_bitboard(bitboard bb) {
 /**
  * For each set bit in destinations, creates the appropriate move and appends to the move vector.
  */
-void MoveGenerator::append_non_castle_moves_from_destinations(bitboard destinations, bitboard start_position, BoardConstants::PIECE move_piece, bool capture, std::vector<Move> move_vector, Board& board, BoardConstants::COLOR color) {
+void MoveGenerator::append_non_castle_moves_from_destinations(bitboard destinations, bitboard start_position, BoardConstants::PIECE move_piece, bool capture, std::vector<Move> &move_vector, Board& board, BoardConstants::COLOR color) {
   bitboard temp_position;
   BoardConstants::PIECE capture_piece;
   for(bitboard mask = 1; mask > 0; mask <<=1) {
     temp_position = destinations & mask;
-    capture_piece = capture ? board.get_piece_at_position(temp_position, color == BoardConstants::WHITE ? BoardConstants::BLACK : BoardConstants::WHITE) : BoardConstants::NONE;
-    Move move(start_position, temp_position, move_piece, capture_piece, false);
-    move_vector.push_back(move);
+    if(temp_position) {
+      capture_piece = capture ? board.get_piece_at_position(temp_position, color == BoardConstants::WHITE ? BoardConstants::BLACK : BoardConstants::WHITE) : BoardConstants::NONE;
+      Move move(start_position, temp_position, move_piece, capture_piece, false);
+      move_vector.push_back(move);
+    }
   }
 }
 
