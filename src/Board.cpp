@@ -357,7 +357,7 @@ BoardConstants::PIECE Board::get_piece_from_index(int index) {
   case 3: return BoardConstants::ROOK;
   case 4: return BoardConstants::QUEEN;
   case 5: return BoardConstants::KING;
-  case 6: return BoardConstants::NONE;
+  default: return BoardConstants::NONE;
   }
 }
 
