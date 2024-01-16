@@ -48,6 +48,9 @@ public:
   // Move type:
   bool is_double_pawn_push(BoardConstants::COLOR color);
 
+  // Printers:
+  void print_move_hex();
+
 private:
   bitboard from_position;
   bitboard to_position;

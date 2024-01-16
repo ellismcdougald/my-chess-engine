@@ -2,6 +2,7 @@
 #define MOVE_CPP // GUARD
 
 #include<iostream>
+#include<iomanip>
 #include"Move.hpp"
 
 void print_bitboard(bitboard bb) {
@@ -61,6 +62,8 @@ bool Move::is_double_pawn_push(BoardConstants::COLOR color) {
   return false;
 }
   
-  
+void Move::print_move_hex() {
+  std::cout << "0x" << std::hex << from_position << " -> " << "0x" << std::hex << to_position << ": " << move_piece << "/" << capture_piece << " -- " << castle << "\n";
+}
 
 #endif // END GUARD
