@@ -87,7 +87,7 @@ private:
    * Receives bitboard encoding the destination squares, a start position, the move piece, whether or not the move is a capture, and a move vector. Generates a move for each destination and appends to the given move vector.
    * Castle moves not handled by this function.
    */
-  void append_non_castle_moves_from_destinations(bitboard destinations, bitboard start_position, BoardConstants::PIECE move_piece, bool capture, std::vector<Move> move_vector, Board& board, BoardConstants::COLOR color);
+  void append_non_castle_moves_from_destinations(bitboard destinations, bitboard start_position, BoardConstants::PIECE move_piece, bool capture, std::vector<Move> &move_vector, Board& board, BoardConstants::COLOR color);
 
   
 };
