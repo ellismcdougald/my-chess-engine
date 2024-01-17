@@ -140,19 +140,24 @@ std::vector<Move> MoveGenerator::generate_pseudo_legal_en_passant_moves(Board &b
   std::vector<Move> pseudo_legal_en_passant_moves;
 
   BoardConstants::COLOR other_color = color == BoardConstants::WHITE ? BoardConstants::BLACK : BoardConstants::WHITE;
-  Move last_move = board.get_last_move(other_color);
 
-  if(last_move.is_double_pawn_push(other_color)) {
-    bitboard vulnerable_pawn = last_move.get_to_position();
-    bitboard attack_pawns = board.get_piece_positions(BoardConstants::PAWN, color) & (board.west(vulnerable_pawn) | board.east(vulnerable_pawn));
-    bitboard destination_square = (color == BoardConstants::WHITE ? board.north(vulnerable_pawn) : board.south(vulnerable_pawn));
+  try {
+    Move last_move = board.get_last_move(other_color);
+ 
+    if(last_move.is_double_pawn_push(other_color)) {
+      bitboard vulnerable_pawn = last_move.get_to_position();
+      bitboard attack_pawns = board.get_piece_positions(BoardConstants::PAWN, color) & (board.west(vulnerable_pawn) | board.east(vulnerable_pawn));
+      bitboard destination_square = (color == BoardConstants::WHITE ? board.north(vulnerable_pawn) : board.south(vulnerable_pawn));
 
-    for(bitboard mask = 1; mask > 0; mask <<= 1) {
-      if(attack_pawns & mask) {
-	Move move(attack_pawns & mask, destination_square, BoardConstants::PAWN, BoardConstants::PAWN, false);
-	pseudo_legal_en_passant_moves.push_back(move);
+      for(bitboard mask = 1; mask > 0; mask <<= 1) {
+	if(attack_pawns & mask) {
+	  Move move(attack_pawns & mask, destination_square, BoardConstants::PAWN, BoardConstants::PAWN, false);
+	  pseudo_legal_en_passant_moves.push_back(move);
+	}
       }
     }
+  } catch(std::logic_error &e) {
+    return pseudo_legal_en_passant_moves;
   }
 
   return pseudo_legal_en_passant_moves;
