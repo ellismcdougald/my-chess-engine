@@ -281,10 +281,21 @@ TEST_CASE("execute_move works properly", "[execute_move]") {
     board.set_piece_positions(BoardConstants::ROOK, BoardConstants::BLACK, 0x1000000000000000);
 
     Move move(0x1000000000000000, 0x10000000, BoardConstants::ROOK, BoardConstants::QUEEN, false);
-    board.execute_move(move, BoardConstants::BLACK);
+    board.execute_non_castle_move(move, BoardConstants::BLACK);
 
     REQUIRE(board.white_bitboards[BoardConstants::QUEEN] == 0);
     REQUIRE(board.black_bitboards[BoardConstants::ROOK] == 0x10000000);
+  }
+
+  SECTION("white castles king side") {
+    board.set_piece_positions(BoardConstants::KING, BoardConstants::WHITE, 0x8);
+    board.set_piece_positions(BoardConstants::ROOK, BoardConstants::WHITE, 1);
+
+    Move move(0x8, 0x2, BoardConstants::KING, BoardConstants::NONE, true);
+    board.execute_move(move, BoardConstants::WHITE);
+
+    REQUIRE(board.white_bitboards[BoardConstants::KING] == 0x2);
+    REQUIRE(board.white_bitboards[BoardConstants::ROOK] == 0x4);
   }
 }
 
@@ -304,12 +315,14 @@ TEST_CASE("undo_move works properly", "[undo_move]") {
     board.set_piece_positions(BoardConstants::ROOK, BoardConstants::BLACK, 0x10000000);
 
     Move move(0x1000000000000000, 0x10000000, BoardConstants::ROOK, BoardConstants::QUEEN, false);
-    board.undo_move(move, BoardConstants::BLACK);
+    board.undo_non_castle_move(move, BoardConstants::BLACK);
 
     REQUIRE(board.white_bitboards[BoardConstants::QUEEN] == 0x10000000);
     REQUIRE(board.black_bitboards[BoardConstants::ROOK] == 0x1000000000000000);
   }
 }
+
+
 
 TEST_CASE("is_move_legal works properly", "[is_move_legal]") {
   Board board;
@@ -382,3 +395,4 @@ TEST_CASE("tests castle rights", "[castle]") {
     REQUIRE(board.can_castle_queen(BoardConstants::BLACK) == false);
   }
 }
+
