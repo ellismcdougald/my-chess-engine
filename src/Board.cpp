@@ -25,6 +25,15 @@ const bitboard Board::starting_black_bishop_position = 0x2400000000000000;
 const bitboard Board::starting_black_knight_position = 0x4200000000000000;
 const bitboard Board::starting_black_pawn_position = 0x00FF000000000000;
 
+const bitboard Board::white_queenside_castle_king_position = 0x20;
+const bitboard Board::white_queenside_castle_rook_position = 0x10;
+const bitboard Board::white_kingside_castle_king_position = 0x2;
+const bitboard Board::white_kingside_castle_rook_position = 0x4;
+const bitboard Board::black_queenside_castle_king_position = 0x2000000000000000;
+const bitboard Board::black_queenside_castle_rook_position = 0x1000000000000000;
+const bitboard Board::black_kingside_castle_king_position = 0x200000000000000;
+const bitboard Board::black_kingside_castle_rook_position = 0x400000000000000;
+
 // Constructors:
 Board::Board() {
   white_bitboards.fill(0);
@@ -140,20 +149,14 @@ bool Board::is_move_legal(Move &move, BoardConstants::COLOR color) {
 }
 
 /**
- * Clears the start bit of the moving piece. Sets the end bit of the moving piece. If capture, clears the bit for the captured piece.
+ * Calls execute_castle_move if move is castle, calls execute_non_castle_move if move is not a castle.
  */
 void Board::execute_move(Move &move, BoardConstants::COLOR color) {
-  BoardConstants::PIECE move_piece = move.get_move_piece();
-  BoardConstants::PIECE capture_piece = move.get_capture_piece();
-  bitboard old_position = move.get_from_position();
-  bitboard new_position = move.get_to_position();
-
-  bitboard* move_piece_bitboard = color == BoardConstants::WHITE ? &white_bitboards[move_piece] : &black_bitboards[move_piece];
-  *move_piece_bitboard ^= (old_position | new_position);
-
-  if(capture_piece != BoardConstants::NONE) {
-    bitboard *capture_piece_bitboard = color == BoardConstants::WHITE ? &black_bitboards[capture_piece] : &white_bitboards[capture_piece];
-    *capture_piece_bitboard &= ~new_position;
+  bool move_is_castle = move.is_castle();
+  if(move_is_castle) {
+    execute_castle_move(move, color);
+  } else {
+    undo_castle_move(move, color);
   }
 
   update_castle_rights(move, color);
@@ -166,10 +169,48 @@ void Board::execute_move(Move &move, BoardConstants::COLOR color) {
 }
 
 /**
- * Performs the opposite of execute_move.
- * Sets the start bit of the moving piece. Clears the end bit of the moving piece. If capture, set the bit for the captured piece.
+ * Calls undo_castle_move if move is castle, calls undo_non_castle_move if move is not a castle.
  */
 void Board::undo_move(Move &move, BoardConstants::COLOR color) {
+  bool move_is_castle = move.is_castle();
+  if(move_is_castle) {
+    undo_castle_move(move, color);
+  } else {
+    undo_castle_move(move, color);
+  }
+
+  reverse_update_castle_rights();
+
+  if(color == BoardConstants::WHITE) {
+    white_moves.pop_back();
+  } else {
+    black_moves.pop_back();
+  }
+}
+
+/**
+ * Clears the start bit of the moving piece. Sets the end bit of the moving piece. If capture, clears the bit for the captured piece.
+ */
+void Board::execute_non_castle_move(Move &move, BoardConstants::COLOR color) {
+  BoardConstants::PIECE move_piece = move.get_move_piece();
+  BoardConstants::PIECE capture_piece = move.get_capture_piece();
+  bitboard old_position = move.get_from_position();
+  bitboard new_position = move.get_to_position();
+
+  bitboard* move_piece_bitboard = color == BoardConstants::WHITE ? &white_bitboards[move_piece] : &black_bitboards[move_piece];
+  *move_piece_bitboard ^= (old_position | new_position);
+
+  if(capture_piece != BoardConstants::NONE) {
+    bitboard *capture_piece_bitboard = color == BoardConstants::WHITE ? &black_bitboards[capture_piece] : &white_bitboards[capture_piece];
+    *capture_piece_bitboard &= ~new_position;
+  }
+}
+
+/**
+ * Performs the opposite of execute_non_castle_move.
+ * Sets the start bit of the moving piece. Clears the end bit of the moving piece. If capture, set the bit for the captured piece.
+ */
+void Board::undo_non_castle_move(Move &move, BoardConstants::COLOR color) {
   BoardConstants::PIECE move_piece = move.get_move_piece();
   BoardConstants::PIECE capture_piece = move.get_capture_piece();
   bitboard old_position = move.get_from_position();
@@ -182,14 +223,72 @@ void Board::undo_move(Move &move, BoardConstants::COLOR color) {
     bitboard *capture_piece_bitboard = color == BoardConstants::WHITE ? &black_bitboards[capture_piece] : &white_bitboards[capture_piece];
     *capture_piece_bitboard |= new_position;
   }
+}
 
-  reverse_update_castle_rights();
+/**
+ ** Clears starting bits for king and rook. Sets new bits for king and rook.
+ */
+void Board::execute_castle_move(Move &move, BoardConstants::COLOR color) {
+  bitboard old_king_position = move.get_from_position();
+  bitboard new_king_position = move.get_to_position();
 
+  bitboard* king_bitboard = (color == BoardConstants::WHITE ? &white_bitboards[BoardConstants::KING] : &black_bitboards[BoardConstants::KING]);
+  bitboard* rook_bitboard = (color == BoardConstants::WHITE ? &white_bitboards[BoardConstants::ROOK] : &black_bitboards[BoardConstants::ROOK]);
+
+  bitboard new_rook_position, old_rook_position;
   if(color == BoardConstants::WHITE) {
-    white_moves.pop_back();
+    if(new_king_position == white_queenside_castle_king_position) {
+      new_rook_position = white_queenside_castle_rook_position;
+      old_rook_position = 0x80;
+    } else {
+      new_rook_position = white_kingside_castle_rook_position;
+      old_rook_position = 0x1;
+    }
   } else {
-    black_moves.pop_back();
+    if(new_king_position == black_queenside_castle_king_position) {
+      new_rook_position = black_queenside_castle_rook_position;
+      old_rook_position = 0x8000000000000000;
+    } else {
+      new_rook_position = black_kingside_castle_rook_position;
+      old_rook_position = 0x100000000000000;
+    }
   }
+
+  *king_bitboard ^= (old_king_position | new_king_position);
+  *rook_bitboard ^= (old_rook_position | new_rook_position);
+}
+
+/**
+ ** Does opposite of execute_castle_move.
+ */
+void Board::undo_castle_move(Move &move, BoardConstants::COLOR color) {
+  bitboard old_king_position = move.get_from_position();
+  bitboard new_king_position = move.get_to_position();
+
+  bitboard* king_bitboard = (color == BoardConstants::WHITE ? &white_bitboards[BoardConstants::KING] : &black_bitboards[BoardConstants::KING]);
+  bitboard* rook_bitboard = (color == BoardConstants::WHITE ? &white_bitboards[BoardConstants::ROOK] : &black_bitboards[BoardConstants::ROOK]);
+
+  bitboard new_rook_position, old_rook_position;
+  if(color == BoardConstants::WHITE) {
+    if(new_king_position == white_queenside_castle_king_position) {
+      new_rook_position = white_queenside_castle_rook_position;
+      old_rook_position = 0x80;
+    } else {
+      new_rook_position = white_kingside_castle_rook_position;
+      old_rook_position = 0x1;
+    }
+  } else {
+    if(new_king_position == black_queenside_castle_king_position) {
+      new_rook_position = black_queenside_castle_rook_position;
+      old_rook_position = 0x8000000000000000;
+    } else {
+      new_rook_position = black_kingside_castle_rook_position;
+      old_rook_position = 0x100000000000000;
+    }
+  }
+
+  *king_bitboard ^= (old_king_position | new_king_position);
+  *rook_bitboard ^= (old_rook_position | new_rook_position);
 }
 
 // Castling:

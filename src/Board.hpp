@@ -90,6 +90,26 @@ public:
    */
   void undo_move(Move &move, BoardConstants::COLOR color);
 
+  /**
+   * Executes a non-castle move on the board and pushes the move to the moving color's move vector.
+   */
+  void execute_non_castle_move(Move &move, BoardConstants::COLOR color);
+
+  /**
+   * Undoes a non-castle move on the board and removes the move from the moving color's move vector.
+   */
+  void undo_non_castle_move(Move &move, BoardConstants::COLOR color);
+
+  /**
+   * Executes a castle move on the board and pushes the move to the moving color's move vector.
+   */
+  void execute_castle_move(Move &move, BoardConstants::COLOR color);
+
+  /**
+   * Undoes a castle move on the board and removes the move from the moving color's move vector.
+   */
+  void undo_castle_move(Move &move, BoardConstants::COLOR color);
+
   // Castling:
   /**
    * Returns true if the given color can castle to the queen side, false otherwise.
@@ -189,6 +209,15 @@ private:
   static const bitboard starting_black_bishop_position;
   static const bitboard starting_black_knight_position;
   static const bitboard starting_black_pawn_position;
+
+  static const bitboard white_queenside_castle_king_position;
+  static const bitboard white_queenside_castle_rook_position;
+  static const bitboard white_kingside_castle_king_position;
+  static const bitboard white_kingside_castle_rook_position;
+  static const bitboard black_queenside_castle_king_position;
+  static const bitboard black_queenside_castle_rook_position;
+  static const bitboard black_kingside_castle_king_position;
+  static const bitboard black_kingside_castle_rook_position;
 
   inline bitboard north(bitboard position) { return (position & ~RANK_8) << 8; }
   inline bitboard south(bitboard position) { return (position & ~RANK_1) >> 8; }
