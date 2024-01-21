@@ -68,6 +68,13 @@ public:
    */
   std::vector<Move> generate_pawn_pseudo_legal_moves(Board &board, BoardConstants::COLOR color);
 
+  /**
+   *
+   * Generates a list of all pseudo-legal moves for the given piece and color.
+   */
+  std::vector<Move> generate_piece_pseudo_legal_moves(Board &board, BoardConstants::PIECE piece, BoardConstants::COLOR color);
+  
+
   // Special moves:
   /**
    * Generates a list of legal castle moves.

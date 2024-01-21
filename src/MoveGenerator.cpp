@@ -134,6 +134,29 @@ std::vector<Move> MoveGenerator::generate_king_pseudo_legal_moves(Board &board, 
   return king_pseudo_legal_moves;
 }
 
+/**
+ * DESC
+ */
+std::vector<Move> MoveGenerator::generate_piece_pseudo_legal_moves(Board &board, BoardConstants::PIECE piece, BoardConstants::COLOR color) {
+  std::vector<Move> piece_pseudo_legal_moves;
+
+  bitboard piece_positions = board.get_piece_positions(piece, color);
+  bitboard other_piece_positions = board.get_all_piece_positions(color);
+  bitboard opponent_piece_positions = board.get_all_piece_positions(color == BoardConstants::WHITE ? BoardConstants::BLACK : BoardConstants::WHITE);
+
+  bitboard temp_position, all_destinations, capture_destinations, non_capture_destinations;
+  for(bitboard mask = 1; mask > 0; mask <<= 1) {
+    temp_position = piece_positions & mask;
+    all_destinations = board.get_piece_destinations(temp_position, piece, color);
+    capture_destinations = all_destinations & ~other_piece_positions & opponent_piece_positions;
+    non_capture_destinations = all_destinations & ~other_piece_positions & ~opponent_piece_positions;
+    append_non_castle_moves_from_destinations(capture_destinations, temp_position, piece, true, piece_pseudo_legal_moves, board, color);
+    append_non_castle_moves_from_destinations(non_capture_destinations, temp_position, piece, false, piece_pseudo_legal_moves, board, color);
+  }
+
+  return piece_pseudo_legal_moves;
+}
+
 // Special Moves:
 
 /**
