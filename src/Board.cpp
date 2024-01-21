@@ -407,9 +407,9 @@ bitboard Board::get_king_attacks(bitboard position) {
 /**
  * Switch statements calls the appropriate method given the piece type.
  */
-bitboard Board::get_piece_attacks(bitboard position, BoardConstants::PIECE piece_type, BoardConstants::COLOR color) {
+bitboard Board::get_piece_destinations(bitboard position, BoardConstants::PIECE piece_type, BoardConstants::COLOR color) {
     switch(piece_type) {
-      case BoardConstants::PAWN: return get_pawn_attacks(position, color);
+    case BoardConstants::PAWN: return get_pawn_single_push(position, color) | get_pawn_double_push(position, color) | get_pawn_attacks(position, color);
       case BoardConstants::KNIGHT: return get_knight_attacks(position);
       case BoardConstants::BISHOP: return get_bishop_attacks(position);
       case BoardConstants::ROOK: return get_rook_attacks(position);
