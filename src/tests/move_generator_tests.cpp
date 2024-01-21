@@ -94,7 +94,7 @@ TEST_CASE("generate_pseudo_legal_en_passant_moves works properly", "[en passant]
   }
 }
 
-/*
+
 TEST_CASE("generate_knight_pseudo_legal_moves works properly", "[knight psuedo legal]") {
   Board board;
   MoveGenerator move_gen;
@@ -112,14 +112,16 @@ TEST_CASE("generate_knight_pseudo_legal_moves works properly", "[knight psuedo l
     Move expected_move_four(0x200000, 0x800, BoardConstants::KNIGHT, BoardConstants::NONE, false);
     Move expected_move_five(0x200000, 0x40, BoardConstants::KNIGHT, BoardConstants::NONE, false);
     Move expected_move_six(0x200000, 0x10, BoardConstants::KNIGHT, BoardConstants::NONE, false);
+    Move expected_move_seven(0x200000, 0x8000, BoardConstants::KNIGHT, BoardConstants::NONE, false);
 
-    REQUIRE(white_knight_pseudo_legal_moves.size() == 6);
+    REQUIRE(white_knight_pseudo_legal_moves.size() == 7);
     REQUIRE(move_vector_contains(expected_move_one, white_knight_pseudo_legal_moves) == true);
     REQUIRE(move_vector_contains(expected_move_two, white_knight_pseudo_legal_moves) == true);
     REQUIRE(move_vector_contains(expected_move_three, white_knight_pseudo_legal_moves) == true);
     REQUIRE(move_vector_contains(expected_move_four, white_knight_pseudo_legal_moves) == true);
     REQUIRE(move_vector_contains(expected_move_five, white_knight_pseudo_legal_moves) == true);
     REQUIRE(move_vector_contains(expected_move_six, white_knight_pseudo_legal_moves) == true);
+    REQUIRE(move_vector_contains(expected_move_seven, white_knight_pseudo_legal_moves) == true);
   }
 }
-*/
+
