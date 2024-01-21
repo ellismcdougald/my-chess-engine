@@ -405,6 +405,21 @@ bitboard Board::get_king_attacks(bitboard position) {
 }
 
 /**
+ * Switch statements calls the appropriate method given the piece type.
+ */
+bitboard Board::get_piece_attacks(bitboard position, BoardConstants::PIECE piece_type, BoardConstants::COLOR color) {
+    switch(piece_type) {
+      case BoardConstants::PAWN: return get_pawn_attacks(position, color);
+      case BoardConstants::KNIGHT: return get_knight_attacks(position);
+      case BoardConstants::BISHOP: return get_bishop_attacks(position);
+      case BoardConstants::ROOK: return get_rook_attacks(position);
+      case BoardConstants::QUEEN: return get_queen_attacks(position);
+      case BoardConstants::KING: return get_king_attacks(position);
+    default: return 0;
+    }
+  }
+
+/**
  * Beginning from the start square, repeatedly move one square in the given direction until another piece is encountered. If that piece is the same color as the moving piece, exclude that bit. If it is the opposite color, include that bit.
  */
 bitboard Board::get_sliding_attacks(bitboard position, BoardConstants::DIRECTION direction) {

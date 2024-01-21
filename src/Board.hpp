@@ -176,6 +176,11 @@ public:
   bitboard get_king_attacks(bitboard positionr);
 
   /**
+   * Returns a bitboard encoding the positions attacked by a piece of the given type and color  on a given square.
+   */
+  bitboard get_piece_attacks(bitboard position, BoardConstants::PIECE piece_type, BoardConstants::COLOR color);
+
+  /**
    * Returns a bitboard encoding the positions attacked by a sliding move from a given square and color in a given direction.
    */
   bitboard get_sliding_attacks(bitboard position, BoardConstants::DIRECTION direction);
