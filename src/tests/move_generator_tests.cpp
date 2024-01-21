@@ -26,7 +26,7 @@ TEST_CASE("generate_pawn_pseudo_legal_moves works properly", "[pawn pseudo legal
     board.set_piece_positions(BoardConstants::PAWN, BoardConstants::WHITE, 0x800);
 
     std::vector<Move> pawn_pseudo_legal_moves = move_gen.generate_pawn_pseudo_legal_moves(board, BoardConstants::WHITE);
-    
+
     Move expected_move_one(0x800, 0x80000, BoardConstants::PAWN, BoardConstants::NONE, false);
     Move expected_move_two(0x800, 0x8000000, BoardConstants::PAWN, BoardConstants::NONE, false);
     
@@ -104,7 +104,7 @@ TEST_CASE("generate_knight_pseudo_legal_moves works properly", "[knight psuedo l
     board.set_piece_positions(BoardConstants::PAWN, BoardConstants::WHITE, 0x8000000);
     board.set_piece_positions(BoardConstants::PAWN, BoardConstants::BLACK, 0x1000000000);
 
-    std::vector<Move> white_knight_pseudo_legal_moves = move_gen.generate_knight_pseudo_legal_moves(board, BoardConstants::WHITE);
+    std::vector<Move> white_knight_pseudo_legal_moves = move_gen.generate_piece_pseudo_legal_moves(board, BoardConstants::KNIGHT, BoardConstants::WHITE);
 
     Move expected_move_one(0x200000, 0x4000000000, BoardConstants::KNIGHT, BoardConstants::NONE, false);
     Move expected_move_two(0x200000, 0x1000000000, BoardConstants::KNIGHT, BoardConstants::PAWN, false);
@@ -124,4 +124,61 @@ TEST_CASE("generate_knight_pseudo_legal_moves works properly", "[knight psuedo l
     REQUIRE(move_vector_contains(expected_move_seven, white_knight_pseudo_legal_moves) == true);
   }
 }
+
+
+
+TEST_CASE("generate_bishop_pseudo_legal_moves works properly", "[bishop pseudo legal]") {
+  Board board;
+  MoveGenerator move_gen;
+
+  SECTION("white bishop with variety of blocking pieces") {
+    board.set_piece_positions(BoardConstants::QUEEN, BoardConstants::WHITE, 0x10);
+    board.set_piece_positions(BoardConstants::BISHOP, BoardConstants::WHITE, 0x2000);
+    board.set_piece_positions(BoardConstants::KNIGHT, BoardConstants::WHITE, 0x400000000);
+    board.set_piece_positions(BoardConstants::PAWN, BoardConstants::BLACK, 0x80000000);
+
+    std::vector<Move> white_bishop_pseudo_legal_moves = move_gen.generate_piece_pseudo_legal_moves(board, BoardConstants::BISHOP, BoardConstants::WHITE);
+
+    Move expected_move_one(0x2000, 0x100000, BoardConstants::BISHOP, BoardConstants::NONE, false);
+    Move expected_move_two(0x2000, 0x8000000, BoardConstants::BISHOP, BoardConstants::NONE, false);
+    Move expected_move_three(0x2000, 0x40, BoardConstants::BISHOP, BoardConstants::NONE, false);
+    Move expected_move_four(0x2000, 0x400000, BoardConstants::BISHOP, BoardConstants::NONE, false);
+    Move expected_move_five(0x2000, 0x80000000, BoardConstants::BISHOP, BoardConstants::PAWN, false);
+
+    REQUIRE(white_bishop_pseudo_legal_moves.size() == 5);
+    REQUIRE(move_vector_contains(expected_move_one, white_bishop_pseudo_legal_moves) == true);
+    REQUIRE(move_vector_contains(expected_move_two, white_bishop_pseudo_legal_moves) == true);
+    REQUIRE(move_vector_contains(expected_move_three, white_bishop_pseudo_legal_moves) == true);
+    REQUIRE(move_vector_contains(expected_move_four, white_bishop_pseudo_legal_moves) == true);
+    REQUIRE(move_vector_contains(expected_move_five, white_bishop_pseudo_legal_moves) == true);
+  }
+}
+
+
+TEST_CASE("generate_rook_pseudo_legal_moves works properly", "[rook pseudo legal]") {
+  Board board;
+  MoveGenerator move_gen;
+
+  SECTION("black rook with black blocker and white blocker") {
+    board.set_piece_positions(BoardConstants::KNIGHT, BoardConstants::WHITE, 0x100000000);
+    board.set_piece_positions(BoardConstants::ROOK, BoardConstants::BLACK, 0x100000000000000);
+    board.set_piece_positions(BoardConstants::KING, BoardConstants::BLACK, 0x800000000000000);
+
+    std::vector<Move> black_rook_pseudo_legal_moves = move_gen.generate_piece_pseudo_legal_moves(board, BoardConstants::ROOK, BoardConstants::BLACK);
+
+    Move expected_move_one(0x100000000000000, 0x200000000000000, BoardConstants::ROOK, BoardConstants::NONE, false);
+    Move expected_move_two(0x100000000000000, 0x400000000000000, BoardConstants::ROOK, BoardConstants::NONE, false);
+    Move expected_move_three(0x100000000000000, 0x1000000000000, BoardConstants::ROOK, BoardConstants::NONE, false);
+    Move expected_move_four(0x100000000000000, 0x10000000000, BoardConstants::ROOK, BoardConstants::NONE, false);
+    Move expected_move_five(0x100000000000000, 0x100000000, BoardConstants::ROOK, BoardConstants::KNIGHT, false);
+
+    REQUIRE(black_rook_pseudo_legal_moves.size() == 5);
+    REQUIRE(move_vector_contains(expected_move_one, black_rook_pseudo_legal_moves) == true);
+    REQUIRE(move_vector_contains(expected_move_two, black_rook_pseudo_legal_moves) == true);
+    REQUIRE(move_vector_contains(expected_move_three, black_rook_pseudo_legal_moves) == true);
+    REQUIRE(move_vector_contains(expected_move_four, black_rook_pseudo_legal_moves) == true);
+    REQUIRE(move_vector_contains(expected_move_five, black_rook_pseudo_legal_moves) == true);
+  }
+}
+
 
