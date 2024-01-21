@@ -72,6 +72,21 @@ std::vector<Move> MoveGenerator::generate_pawn_pseudo_legal_moves(Board &board, 
 std::vector<Move> MoveGenerator::generate_knight_pseudo_legal_moves(Board &board, BoardConstants::COLOR color) {
   std::vector<Move> knight_pseudo_legal_moves;
 
+  bitboard knight_positions = board.get_piece_positions(BoardConstants::KNIGHT, color);
+  bitboard other_piece_positions = board.get_all_piece_positions(color);
+  bitboard opponent_piece_positions = board.get_all_piece_positions(color == BoardConstants::WHITE ? BoardConstants::BLACK : BoardConstants::WHITE);
+
+  bitboard non_capture_destinations, capture_destinations, temp_position;
+  for(bitboard mask = 1; mask > 0; mask <<= 1) {
+    temp_position = knight_positions & mask;
+    if(temp_position) {
+      non_capture_destinations = board.get_knight_attacks(temp_position) & ~other_piece_positions & ~opponent_piece_positions;
+      append_non_castle_moves_from_destinations(non_capture_destinations, temp_position, BoardConstants::KNIGHT, false, knight_pseudo_legal_moves, board, color);
+      capture_destinations = board.get_knight_attacks(temp_position) & ~other_piece_positions & opponent_piece_positions;
+      append_non_castle_moves_from_destinations(capture_destinations, temp_position, BoardConstants::KNIGHT, true, knight_pseudo_legal_moves, board, color);
+    }
+  }
+
   return knight_pseudo_legal_moves;
 }
 
