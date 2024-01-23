@@ -181,4 +181,45 @@ TEST_CASE("generate_rook_pseudo_legal_moves works properly", "[rook pseudo legal
   }
 }
 
+TEST_CASE("generate queen pseudo legal moves works properly", "[queen pseudo legal]") {
+  Board board;
+  MoveGenerator move_gen;
+
+  SECTION("white queen with variety of blockers") {
+    board.set_piece_positions(BoardConstants::QUEEN, BoardConstants::WHITE, 0x8);
+    board.set_piece_positions(BoardConstants::ROOK, BoardConstants::WHITE, 0x81);
+    board.set_piece_positions(BoardConstants::KNIGHT, BoardConstants::WHITE, 0x200000);
+    board.set_piece_positions(BoardConstants::BISHOP, BoardConstants::BLACK, 0x9000000);
+
+    std::vector<Move> white_queen_pseudo_legal_moves = move_gen.generate_piece_pseudo_legal_moves(board, BoardConstants::QUEEN, BoardConstants::WHITE);
+
+    Move expected_move_one(0x8, 0x4, BoardConstants::QUEEN, BoardConstants::NONE, false);
+    Move expected_move_two(0x8, 0x2, BoardConstants::QUEEN, BoardConstants::NONE, false);
+    Move expected_move_three(0x8, 0x10, BoardConstants::QUEEN, BoardConstants::NONE, false);
+    Move expected_move_four(0x8, 0x20, BoardConstants::QUEEN, BoardConstants::NONE, false);
+    Move expected_move_five(0x8, 0x40, BoardConstants::QUEEN, BoardConstants::NONE, false);
+    Move expected_move_six(0x8, 0x400, BoardConstants::QUEEN, BoardConstants::NONE, false);
+    Move expected_move_seven(0x8, 0x20000, BoardConstants::QUEEN, BoardConstants::NONE, false);
+    Move expected_move_eight(0x8, 0x800, BoardConstants::QUEEN, BoardConstants::NONE, false);
+    Move expected_move_nine(0x8, 0x80000, BoardConstants::QUEEN, BoardConstants::NONE, false);
+    Move expected_move_ten(0x8, 0x20000, BoardConstants::QUEEN, BoardConstants::NONE, false);
+    Move expected_move_eleven(0x8, 0x8000000, BoardConstants::QUEEN, BoardConstants::BISHOP, false);
+    Move expected_move_twelve(0x8, 0x1000000, BoardConstants::QUEEN, BoardConstants::BISHOP, false);
+
+    REQUIRE(white_queen_pseudo_legal_moves.size() == 12);
+    REQUIRE(move_vector_contains(expected_move_one, white_queen_pseudo_legal_moves) == true);
+    REQUIRE(move_vector_contains(expected_move_two, white_queen_pseudo_legal_moves) == true);
+    REQUIRE(move_vector_contains(expected_move_three, white_queen_pseudo_legal_moves) == true);
+    REQUIRE(move_vector_contains(expected_move_four, white_queen_pseudo_legal_moves) == true);
+    REQUIRE(move_vector_contains(expected_move_five, white_queen_pseudo_legal_moves) == true);
+    REQUIRE(move_vector_contains(expected_move_six, white_queen_pseudo_legal_moves) == true);
+    REQUIRE(move_vector_contains(expected_move_seven, white_queen_pseudo_legal_moves) == true);
+    REQUIRE(move_vector_contains(expected_move_eight, white_queen_pseudo_legal_moves) == true);
+    REQUIRE(move_vector_contains(expected_move_nine, white_queen_pseudo_legal_moves) == true);
+    REQUIRE(move_vector_contains(expected_move_ten, white_queen_pseudo_legal_moves) == true);
+    REQUIRE(move_vector_contains(expected_move_eleven, white_queen_pseudo_legal_moves) == true);
+    REQUIRE(move_vector_contains(expected_move_twelve, white_queen_pseudo_legal_moves) == true);
+  }
+}
+
 
