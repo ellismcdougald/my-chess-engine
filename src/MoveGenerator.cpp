@@ -160,12 +160,53 @@ std::vector<Move> MoveGenerator::generate_piece_pseudo_legal_moves(Board &board,
 // Special Moves:
 
 /**
- * TODO
+ * NEEDS REFACTOR: split into functions
+
  * Calls Board::can_castle_queen and Board::can_castle_king to determine if the color has castle rights to either side. If yes, verifies that the castle lane is unobstructed and is not attacked.
  */
 std::vector<Move> MoveGenerator::generate_legal_castle_moves(Board &board, BoardConstants::COLOR color) {
   std::vector<Move> legal_castle_moves;
 
+  BoardConstants::COLOR other_color = color == BoardConstants::WHITE ? BoardConstants::BLACK : BoardConstants::WHITE;
+  bitboard king_position = board.get_piece_positions(BoardConstants::KING, color);
+  bitboard castle_path_position;
+
+  // King side
+  bool can_castle_king = board.can_castle_king(color);
+  if(can_castle_king) {
+    castle_path_position = board.get_piece_positions(BoardConstants::KING, color);
+    for(int i = 0; i < 2; i++) {
+      castle_path_position >>= 1;
+      if(board.get_attacks_to_position(castle_path_position, other_color)) {
+	can_castle_king = false;
+	break;
+      }
+    }
+  }
+  bool can_castle_queen = board.can_castle_queen(color);
+  if(can_castle_queen) {
+    castle_path_position = board.get_piece_positions(BoardConstants::KING, color);
+    for(int i = 0; i < 3; i++) {
+      castle_path_position <<= 1;
+      if(board.get_attacks_to_position(castle_path_position, other_color)) {
+	can_castle_queen = false;
+	break;
+      }
+    }
+  }
+
+  bitboard king_end_position;
+  if(can_castle_king) {
+    king_end_position = color == BoardConstants::WHITE ? 0x2 : 0x200000000000000;
+    Move king_castle(king_position, king_end_position, BoardConstants::KING, BoardConstants::NONE, true);
+    legal_castle_moves.push_back(king_castle);
+  }
+  if(can_castle_queen) {
+    king_end_position = color == BoardConstants::WHITE ? 0x20 : 0x2000000000000000;
+    Move queen_castle(king_position, king_end_position, BoardConstants::KING, BoardConstants::NONE, true);
+    legal_castle_moves.push_back(queen_castle);
+  }
+ 
   return legal_castle_moves;
 }
 
