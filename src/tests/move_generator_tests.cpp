@@ -223,3 +223,34 @@ TEST_CASE("generate queen pseudo legal moves works properly", "[queen pseudo leg
 }
 
 
+TEST_CASE("generate legal castle moves works properly") {
+  Board board;
+  MoveGenerator move_gen;
+
+  SECTION("Can castle both ways on otherwise empty board other than king and two rooks") {
+    board.set_piece_positions(BoardConstants::KING, BoardConstants::WHITE, 0x8);
+    board.set_piece_positions(BoardConstants::ROOK, BoardConstants::WHITE, 0x81);
+
+    std::vector<Move> castle_moves = move_gen.generate_legal_castle_moves(board, BoardConstants::WHITE);
+
+    Move expected_move_one(0x8, 0x2, BoardConstants::KING, BoardConstants::NONE, true);
+    Move expected_move_two(0x8, 0x20, BoardConstants::KING, BoardConstants::NONE, true);
+
+    REQUIRE(castle_moves.size() == 2);
+    REQUIRE(move_vector_contains(expected_move_one, castle_moves) == true);
+    REQUIRE(move_vector_contains(expected_move_one, castle_moves) == true);
+  }
+
+  
+  SECTION("Can only castle king side if queen side path is attacked") {
+     board.set_piece_positions(BoardConstants::KING, BoardConstants::WHITE, 0x8);
+     board.set_piece_positions(BoardConstants::ROOK, BoardConstants::WHITE, 0x81);
+     board.set_piece_positions(BoardConstants::ROOK, BoardConstants::BLACK, 0x400000);
+    
+    std::vector<Move> castle_moves = move_gen.generate_legal_castle_moves(board, BoardConstants::WHITE);
+
+    Move expected_move_one(0x8, 0x2, BoardConstants::KING, BoardConstants::NONE, true);
+    REQUIRE(castle_moves.size() == 1);
+    REQUIRE(move_vector_contains(expected_move_one, castle_moves) == true);
+  }
+}
