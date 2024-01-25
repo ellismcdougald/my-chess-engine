@@ -18,14 +18,15 @@ void print_move_vector(std::vector<Move> move_vector) {
   }
 }
 
-TEST_CASE("generate_pawn_pseudo_legal_moves works properly", "[pawn pseudo legal]") {
+TEST_CASE("append_pawn_pseudo_legal_moves works properly", "[pawn pseudo legal]") {
   Board board;
   MoveGenerator move_gen;
 
   SECTION("single white pawn on otherwise white board") {
     board.set_piece_positions(BoardConstants::PAWN, BoardConstants::WHITE, 0x800);
 
-    std::vector<Move> pawn_pseudo_legal_moves = move_gen.generate_pawn_pseudo_legal_moves(board, BoardConstants::WHITE);
+    std::vector<Move> pawn_pseudo_legal_moves;
+    move_gen.append_pawn_pseudo_legal_moves(pawn_pseudo_legal_moves, board, BoardConstants::WHITE);
 
     Move expected_move_one(0x800, 0x80000, BoardConstants::PAWN, BoardConstants::NONE, false);
     Move expected_move_two(0x800, 0x8000000, BoardConstants::PAWN, BoardConstants::NONE, false);
@@ -41,7 +42,8 @@ TEST_CASE("generate_pawn_pseudo_legal_moves works properly", "[pawn pseudo legal
 
     // Test white:
 
-    std::vector<Move> pawn_pseudo_legal_moves_white = move_gen.generate_pawn_pseudo_legal_moves(board, BoardConstants::WHITE);
+    std::vector<Move> pawn_pseudo_legal_moves_white;
+    move_gen.append_pawn_pseudo_legal_moves(pawn_pseudo_legal_moves_white, board, BoardConstants::WHITE);
 
     Move white_expected_move_one(0x10000000, 0x1000000000, BoardConstants::PAWN, BoardConstants::NONE, false);
     Move white_expected_move_two(0x10000000, 0x800000000, BoardConstants::PAWN, BoardConstants::PAWN, false);
@@ -52,8 +54,9 @@ TEST_CASE("generate_pawn_pseudo_legal_moves works properly", "[pawn pseudo legal
 
     
     // Test black:
-      
-    std::vector<Move> pawn_pseudo_legal_moves_black = move_gen.generate_pawn_pseudo_legal_moves(board, BoardConstants::BLACK);
+
+    std::vector<Move> pawn_pseudo_legal_moves_black;
+    move_gen.append_pawn_pseudo_legal_moves(pawn_pseudo_legal_moves_black, board, BoardConstants::BLACK);
 
     Move black_expected_move_one(0x800000000, 0x8000000, BoardConstants::PAWN, BoardConstants::NONE, false);
     Move black_expected_move_two(0x800000000, 0x10000000, BoardConstants::PAWN, BoardConstants::PAWN, false);
@@ -64,7 +67,7 @@ TEST_CASE("generate_pawn_pseudo_legal_moves works properly", "[pawn pseudo legal
   }
 }
 
-TEST_CASE("generate_pseudo_legal_en_passant_moves works properly", "[en passant]") {
+TEST_CASE("append_pseudo_legal_en_passant_moves works properly", "[en passant]") {
   Board board;
   MoveGenerator move_gen;
 
@@ -75,7 +78,13 @@ TEST_CASE("generate_pseudo_legal_en_passant_moves works properly", "[en passant]
     Move pawn_push(0x800, 0x8000000, BoardConstants::PAWN, BoardConstants::NONE, false);
     board.execute_move(pawn_push, BoardConstants::WHITE);
 
+    /*
     std::vector<Move> black_en_passant_pseudo_legal_moves = move_gen.generate_pseudo_legal_en_passant_moves(board, BoardConstants::BLACK);
+    */
+
+    std::vector<Move> black_en_passant_pseudo_legal_moves;
+    move_gen.append_pseudo_legal_en_passant_moves(black_en_passant_pseudo_legal_moves, board, BoardConstants::BLACK);
+    
 
     Move expected_move_one(0x10000000, 0x80000, BoardConstants::PAWN, BoardConstants::PAWN, false);
     Move expected_move_two(0x4000000, 0x80000, BoardConstants::PAWN, BoardConstants::PAWN, false);
@@ -89,13 +98,19 @@ TEST_CASE("generate_pseudo_legal_en_passant_moves works properly", "[en passant]
     board.set_piece_positions(BoardConstants::PAWN, BoardConstants::WHITE, 0x8000000);
     board.set_piece_positions(BoardConstants::PAWN, BoardConstants::WHITE, 0x10000000);
 
+    /*
     std::vector<Move> black_en_passant_pseudo_legal_moves = move_gen.generate_pseudo_legal_en_passant_moves(board, BoardConstants::BLACK);
+    */
+
+    std::vector<Move> black_en_passant_pseudo_legal_moves;
+    move_gen.append_pseudo_legal_en_passant_moves(black_en_passant_pseudo_legal_moves, board, BoardConstants::BLACK);
+    
     REQUIRE(black_en_passant_pseudo_legal_moves.size() == 0);
   }
 }
 
 
-TEST_CASE("generate_knight_pseudo_legal_moves works properly", "[knight psuedo legal]") {
+TEST_CASE("append_knight_pseudo_legal_moves works properly", "[knight psuedo legal]") {
   Board board;
   MoveGenerator move_gen;
 
@@ -104,7 +119,8 @@ TEST_CASE("generate_knight_pseudo_legal_moves works properly", "[knight psuedo l
     board.set_piece_positions(BoardConstants::PAWN, BoardConstants::WHITE, 0x8000000);
     board.set_piece_positions(BoardConstants::PAWN, BoardConstants::BLACK, 0x1000000000);
 
-    std::vector<Move> white_knight_pseudo_legal_moves = move_gen.generate_piece_pseudo_legal_moves(board, BoardConstants::KNIGHT, BoardConstants::WHITE);
+    std::vector<Move> white_knight_pseudo_legal_moves;
+    move_gen.append_piece_pseudo_legal_moves(white_knight_pseudo_legal_moves, board, BoardConstants::KNIGHT, BoardConstants::WHITE);
 
     Move expected_move_one(0x200000, 0x4000000000, BoardConstants::KNIGHT, BoardConstants::NONE, false);
     Move expected_move_two(0x200000, 0x1000000000, BoardConstants::KNIGHT, BoardConstants::PAWN, false);
@@ -127,7 +143,7 @@ TEST_CASE("generate_knight_pseudo_legal_moves works properly", "[knight psuedo l
 
 
 
-TEST_CASE("generate_bishop_pseudo_legal_moves works properly", "[bishop pseudo legal]") {
+TEST_CASE("append_bishop_pseudo_legal_moves works properly", "[bishop pseudo legal]") {
   Board board;
   MoveGenerator move_gen;
 
@@ -137,7 +153,8 @@ TEST_CASE("generate_bishop_pseudo_legal_moves works properly", "[bishop pseudo l
     board.set_piece_positions(BoardConstants::KNIGHT, BoardConstants::WHITE, 0x400000000);
     board.set_piece_positions(BoardConstants::PAWN, BoardConstants::BLACK, 0x80000000);
 
-    std::vector<Move> white_bishop_pseudo_legal_moves = move_gen.generate_piece_pseudo_legal_moves(board, BoardConstants::BISHOP, BoardConstants::WHITE);
+    std::vector<Move> white_bishop_pseudo_legal_moves;
+    move_gen.append_piece_pseudo_legal_moves(white_bishop_pseudo_legal_moves, board, BoardConstants::BISHOP, BoardConstants::WHITE);
 
     Move expected_move_one(0x2000, 0x100000, BoardConstants::BISHOP, BoardConstants::NONE, false);
     Move expected_move_two(0x2000, 0x8000000, BoardConstants::BISHOP, BoardConstants::NONE, false);
@@ -155,7 +172,7 @@ TEST_CASE("generate_bishop_pseudo_legal_moves works properly", "[bishop pseudo l
 }
 
 
-TEST_CASE("generate_rook_pseudo_legal_moves works properly", "[rook pseudo legal]") {
+TEST_CASE("append_rook_pseudo_legal_moves works properly", "[rook pseudo legal]") {
   Board board;
   MoveGenerator move_gen;
 
@@ -164,7 +181,8 @@ TEST_CASE("generate_rook_pseudo_legal_moves works properly", "[rook pseudo legal
     board.set_piece_positions(BoardConstants::ROOK, BoardConstants::BLACK, 0x100000000000000);
     board.set_piece_positions(BoardConstants::KING, BoardConstants::BLACK, 0x800000000000000);
 
-    std::vector<Move> black_rook_pseudo_legal_moves = move_gen.generate_piece_pseudo_legal_moves(board, BoardConstants::ROOK, BoardConstants::BLACK);
+    std::vector<Move> black_rook_pseudo_legal_moves;
+    move_gen.append_piece_pseudo_legal_moves(black_rook_pseudo_legal_moves, board, BoardConstants::ROOK, BoardConstants::BLACK);
 
     Move expected_move_one(0x100000000000000, 0x200000000000000, BoardConstants::ROOK, BoardConstants::NONE, false);
     Move expected_move_two(0x100000000000000, 0x400000000000000, BoardConstants::ROOK, BoardConstants::NONE, false);
@@ -181,7 +199,7 @@ TEST_CASE("generate_rook_pseudo_legal_moves works properly", "[rook pseudo legal
   }
 }
 
-TEST_CASE("generate queen pseudo legal moves works properly", "[queen pseudo legal]") {
+TEST_CASE("append queen pseudo legal moves works properly", "[queen pseudo legal]") {
   Board board;
   MoveGenerator move_gen;
 
@@ -191,7 +209,8 @@ TEST_CASE("generate queen pseudo legal moves works properly", "[queen pseudo leg
     board.set_piece_positions(BoardConstants::KNIGHT, BoardConstants::WHITE, 0x200000);
     board.set_piece_positions(BoardConstants::BISHOP, BoardConstants::BLACK, 0x9000000);
 
-    std::vector<Move> white_queen_pseudo_legal_moves = move_gen.generate_piece_pseudo_legal_moves(board, BoardConstants::QUEEN, BoardConstants::WHITE);
+    std::vector<Move> white_queen_pseudo_legal_moves;
+    move_gen.append_piece_pseudo_legal_moves(white_queen_pseudo_legal_moves, board, BoardConstants::QUEEN, BoardConstants::WHITE);
 
     Move expected_move_one(0x8, 0x4, BoardConstants::QUEEN, BoardConstants::NONE, false);
     Move expected_move_two(0x8, 0x2, BoardConstants::QUEEN, BoardConstants::NONE, false);
@@ -223,7 +242,7 @@ TEST_CASE("generate queen pseudo legal moves works properly", "[queen pseudo leg
 }
 
 
-TEST_CASE("generate legal castle moves works properly") {
+TEST_CASE("append legal castle moves works properly") {
   Board board;
   MoveGenerator move_gen;
 
@@ -231,7 +250,8 @@ TEST_CASE("generate legal castle moves works properly") {
     board.set_piece_positions(BoardConstants::KING, BoardConstants::WHITE, 0x8);
     board.set_piece_positions(BoardConstants::ROOK, BoardConstants::WHITE, 0x81);
 
-    std::vector<Move> castle_moves = move_gen.generate_legal_castle_moves(board, BoardConstants::WHITE);
+    std::vector<Move> castle_moves;
+    move_gen.append_legal_castle_moves(castle_moves, board, BoardConstants::WHITE);
 
     Move expected_move_one(0x8, 0x2, BoardConstants::KING, BoardConstants::NONE, true);
     Move expected_move_two(0x8, 0x20, BoardConstants::KING, BoardConstants::NONE, true);
@@ -247,7 +267,8 @@ TEST_CASE("generate legal castle moves works properly") {
      board.set_piece_positions(BoardConstants::ROOK, BoardConstants::WHITE, 0x81);
      board.set_piece_positions(BoardConstants::ROOK, BoardConstants::BLACK, 0x400000);
     
-    std::vector<Move> castle_moves = move_gen.generate_legal_castle_moves(board, BoardConstants::WHITE);
+     std::vector<Move> castle_moves;
+     move_gen.append_legal_castle_moves(castle_moves, board, BoardConstants::WHITE);
 
     Move expected_move_one(0x8, 0x2, BoardConstants::KING, BoardConstants::NONE, true);
     REQUIRE(castle_moves.size() == 1);
