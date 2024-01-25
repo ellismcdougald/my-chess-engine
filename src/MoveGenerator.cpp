@@ -12,7 +12,7 @@
 MoveGenerator::MoveGenerator() {}
 
 /**
- * TODO
+ * NEEDS TEST
  
  * Generates pseudo-legal moves, then removes those that leave the king in check.
  * Appends castle moves (these are legally generated, not pseudo-legal like the others).
@@ -20,30 +20,44 @@ MoveGenerator::MoveGenerator() {}
 std::vector<Move> MoveGenerator::generate_legal_moves(Board &board, BoardConstants::COLOR color) {
   std::vector<Move> legal_moves;
 
+  std::vector<Move> pseudo_legal_moves = generate_pseudo_legal_moves(board, color);
+  for(int i = 0; i < pseudo_legal_moves.size(); i++) {
+    if(board.is_move_legal(pseudo_legal_moves[i], color)) {
+      legal_moves.push_back(pseudo_legal_moves[i]);
+    }
+  }
+
+  append_legal_castle_moves(legal_moves, board, color);
+
   return legal_moves;
 }
 
 /**
- * TODO
- 
+ * NEEDS TEST
+   
  * Calls pseudo-legal move generation functions for each piece tyoe.
  */
+
 std::vector<Move> MoveGenerator::generate_pseudo_legal_moves(Board &board, BoardConstants::COLOR color) {
   std::vector<Move> pseudo_legal_moves;
 
+  append_pawn_pseudo_legal_moves(pseudo_legal_moves, board, color);
+  append_pseudo_legal_en_passant_moves(pseudo_legal_moves, board, color);
+  append_piece_pseudo_legal_moves(pseudo_legal_moves, board, BoardConstants::KNIGHT, color);
+  append_piece_pseudo_legal_moves(pseudo_legal_moves, board, BoardConstants::BISHOP, color);
+  append_piece_pseudo_legal_moves(pseudo_legal_moves, board, BoardConstants::ROOK, color);
+  append_piece_pseudo_legal_moves(pseudo_legal_moves, board, BoardConstants::QUEEN, color);
+  append_piece_pseudo_legal_moves(pseudo_legal_moves, board, BoardConstants::KING, color);
+ 
   return pseudo_legal_moves;
 }
 
 // Piece move generation:
 
 /**
- * TEST
- 
  * Receives a bitboard encoding the positions of the pawns. For each pawn, get eligible single push positions, double push positions, and attack positions (using Board methods and other piece locations). Then calls generate_pseudo_legal_en_passant_moves and appends these moves.
  */
-std::vector<Move> MoveGenerator::generate_pawn_pseudo_legal_moves(Board &board, BoardConstants::COLOR color) {
-  std::vector<Move> pawn_pseudo_legal_moves;
-
+void  MoveGenerator::append_pawn_pseudo_legal_moves(std::vector<Move> &pawn_pseudo_legal_moves, Board &board, BoardConstants::COLOR color) {
   bitboard pawn_positions = board.get_piece_positions(BoardConstants::PAWN, color);
   bitboard opponent_positions = board.get_all_piece_positions(color == BoardConstants::WHITE ? BoardConstants::BLACK : BoardConstants::WHITE);
   
@@ -60,86 +74,12 @@ std::vector<Move> MoveGenerator::generate_pawn_pseudo_legal_moves(Board &board, 
       append_non_castle_moves_from_destinations(attack_destinations, temp_position, BoardConstants::PAWN, true, pawn_pseudo_legal_moves, board, color);
     }
   }
-
-  return pawn_pseudo_legal_moves;
 }
 
 /**
- * TODO
- 
- * Receives a bitboard encoding the position of the knights. For each knight, calls Board::get_knight_attacks to generate possible move positions. Positions that land on another piece of the same color are removed.
+ * Receives a bitboard encoding the position of the piece to move. Gets possible piece destination squares and generates a move for each destination square. Appends to the given vector.
  */
-std::vector<Move> MoveGenerator::generate_knight_pseudo_legal_moves(Board &board, BoardConstants::COLOR color) {
-  std::vector<Move> knight_pseudo_legal_moves;
-
-  bitboard knight_positions = board.get_piece_positions(BoardConstants::KNIGHT, color);
-  bitboard other_piece_positions = board.get_all_piece_positions(color);
-  bitboard opponent_piece_positions = board.get_all_piece_positions(color == BoardConstants::WHITE ? BoardConstants::BLACK : BoardConstants::WHITE);
-
-  bitboard non_capture_destinations, capture_destinations, temp_position;
-  for(bitboard mask = 1; mask > 0; mask <<= 1) {
-    temp_position = knight_positions & mask;
-    if(temp_position) {
-      non_capture_destinations = board.get_knight_attacks(temp_position) & ~other_piece_positions & ~opponent_piece_positions;
-      append_non_castle_moves_from_destinations(non_capture_destinations, temp_position, BoardConstants::KNIGHT, false, knight_pseudo_legal_moves, board, color);
-      capture_destinations = board.get_knight_attacks(temp_position) & ~other_piece_positions & opponent_piece_positions;
-      append_non_castle_moves_from_destinations(capture_destinations, temp_position, BoardConstants::KNIGHT, true, knight_pseudo_legal_moves, board, color);
-    }
-  }
-
-  return knight_pseudo_legal_moves;
-}
-
-/**
- * TODO
- 
- * Receives a bitboard encoding the position of the knights. For each bishop, calls Board::get_bishop_attacks to generate possible move positions. Positions that land on another piece of the same color are removed.
- */
-std::vector<Move> MoveGenerator::generate_bishop_pseudo_legal_moves(Board &board, BoardConstants::COLOR color) {
-  std::vector<Move> bishop_pseudo_legal_moves;
-
-  return bishop_pseudo_legal_moves;
-}
-
-/**
- * TODO
- 
- * Receives a bitboard encoding the position of the rooks. For each rook, calls Board::get_rook_attacks to generate possible move positions. Positions that land on another piece of the same color are removed.
- */
-std::vector<Move> MoveGenerator::generate_rook_pseudo_legal_moves(Board &board, BoardConstants::COLOR color) {
-  std::vector<Move> rook_pseudo_legal_moves;
-
-  return rook_pseudo_legal_moves;
-}
-
-/**
- * TODO
- 
- * Receives a bitboard encoding the position of the queens. For each queen, calls Board::get_queen_attacks to generate possible move positions. Positions that land on another piece of the same color are removed.
- */
-std::vector<Move> MoveGenerator::generate_queen_pseudo_legal_moves(Board &board, BoardConstants::COLOR color) {
-  std::vector<Move> queen_pseudo_legal_moves;
-
-  return queen_pseudo_legal_moves;
-}
-
-/**
- * TODO
- 
- * Receives a bitboard encoding the position of the king. Uses lookup table to generate possible move positions. Positions that land on another piece of the same color are removed.
- */
-std::vector<Move> MoveGenerator::generate_king_pseudo_legal_moves(Board &board, BoardConstants::COLOR color) {
-  std::vector<Move> king_pseudo_legal_moves;
-
-  return king_pseudo_legal_moves;
-}
-
-/**
- * DESC
- */
-std::vector<Move> MoveGenerator::generate_piece_pseudo_legal_moves(Board &board, BoardConstants::PIECE piece, BoardConstants::COLOR color) {
-  std::vector<Move> piece_pseudo_legal_moves;
-
+void MoveGenerator::append_piece_pseudo_legal_moves(std::vector<Move> &piece_pseudo_legal_moves, Board &board, BoardConstants::PIECE piece, BoardConstants::COLOR color) {
   bitboard piece_positions = board.get_piece_positions(piece, color);
   bitboard other_piece_positions = board.get_all_piece_positions(color);
   bitboard opponent_piece_positions = board.get_all_piece_positions(color == BoardConstants::WHITE ? BoardConstants::BLACK : BoardConstants::WHITE);
@@ -153,8 +93,6 @@ std::vector<Move> MoveGenerator::generate_piece_pseudo_legal_moves(Board &board,
     append_non_castle_moves_from_destinations(capture_destinations, temp_position, piece, true, piece_pseudo_legal_moves, board, color);
     append_non_castle_moves_from_destinations(non_capture_destinations, temp_position, piece, false, piece_pseudo_legal_moves, board, color);
   }
-
-  return piece_pseudo_legal_moves;
 }
 
 // Special Moves:
@@ -164,9 +102,7 @@ std::vector<Move> MoveGenerator::generate_piece_pseudo_legal_moves(Board &board,
 
  * Calls Board::can_castle_queen and Board::can_castle_king to determine if the color has castle rights to either side. If yes, verifies that the castle lane is unobstructed and is not attacked.
  */
-std::vector<Move> MoveGenerator::generate_legal_castle_moves(Board &board, BoardConstants::COLOR color) {
-  std::vector<Move> legal_castle_moves;
-
+void MoveGenerator::append_legal_castle_moves(std::vector<Move> &legal_castle_moves, Board &board, BoardConstants::COLOR color) {
   BoardConstants::COLOR other_color = color == BoardConstants::WHITE ? BoardConstants::BLACK : BoardConstants::WHITE;
   bitboard king_position = board.get_piece_positions(BoardConstants::KING, color);
   bitboard castle_path_position;
@@ -206,18 +142,12 @@ std::vector<Move> MoveGenerator::generate_legal_castle_moves(Board &board, Board
     Move queen_castle(king_position, king_end_position, BoardConstants::KING, BoardConstants::NONE, true);
     legal_castle_moves.push_back(queen_castle);
   }
- 
-  return legal_castle_moves;
 }
 
 /**
- * NEEDS TEST
- 
  * Calls Board::get_last_move for the opposing color and checks if the last move was a double pawn push. If yes, gets pawns that are in position for an en passant move and generates a move for each of those pawns.
  */
-std::vector<Move> MoveGenerator::generate_pseudo_legal_en_passant_moves(Board &board, BoardConstants::COLOR color) {
-  std::vector<Move> pseudo_legal_en_passant_moves;
-
+std::vector<Move> MoveGenerator::append_pseudo_legal_en_passant_moves(std::vector<Move> &pseudo_legal_en_passant_moves, Board &board, BoardConstants::COLOR color) {
   BoardConstants::COLOR other_color = color == BoardConstants::WHITE ? BoardConstants::BLACK : BoardConstants::WHITE;
 
   try {
