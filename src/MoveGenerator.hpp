@@ -66,25 +66,25 @@ public:
    * Generates a list of all pseudo-legal moves for the pawn of the given color.
    * Handles single pushes, double pushes, attacks, and en passant.
    */
-  std::vector<Move> generate_pawn_pseudo_legal_moves(Board &board, BoardConstants::COLOR color);
+  void append_pawn_pseudo_legal_moves(std::vector<Move> &pawn_pseudo_legal_moves, Board &board, BoardConstants::COLOR color);
 
   /**
    *
    * Generates a list of all pseudo-legal moves for the given piece and color.
    */
-  std::vector<Move> generate_piece_pseudo_legal_moves(Board &board, BoardConstants::PIECE piece, BoardConstants::COLOR color);
+  void append_piece_pseudo_legal_moves(std::vector<Move> &piece_pseudo_legal_moves, Board &board, BoardConstants::PIECE piece, BoardConstants::COLOR color);
   
 
   // Special moves:
   /**
    * Generates a list of legal castle moves.
    */
-  std::vector<Move> generate_legal_castle_moves(Board &board, BoardConstants::COLOR color);
+ void append_legal_castle_moves(std::vector<Move> &legal_castle_moves, Board &board, BoardConstants::COLOR color);
 
   /**
    * Generates a list of pseudo-legal en passant pawn moves.
    */
-  std::vector<Move> generate_pseudo_legal_en_passant_moves(Board &board, BoardConstants::COLOR color);
+  std::vector<Move> append_pseudo_legal_en_passant_moves(std::vector<Move> &pseudo_legal_en_passant_moves, Board &board, BoardConstants::COLOR color);
 
   // Printers:
   void print_bitboard(bitboard bb);
