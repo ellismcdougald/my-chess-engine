@@ -20,7 +20,17 @@ Move::Move(bitboard from, bitboard to, BoardConstants::PIECE move_p, BoardConsta
   to_position = to;
   move_piece = move_p;
   capture_piece = capture_p;
+  promotion_piece = BoardConstants::NONE;
   castle = is_castle;
+}
+
+Move::Move(bitboard from, bitboard to, BoardConstants::PIECE move_p, BoardConstants::PIECE capture_p, BoardConstants::PIECE promotion_p) {
+  from_position = from;
+  to_position = to;
+  move_piece = move_p;
+  capture_piece = capture_p;
+  promotion_piece = promotion_p;
+  castle = false;
 }
 
 bitboard Move::get_from_position() {
@@ -63,7 +73,7 @@ bool Move::is_double_pawn_push(BoardConstants::COLOR color) {
 }
   
 void Move::print_move_hex() {
-  std::cout << "0x" << std::hex << from_position << " -> " << "0x" << std::hex << to_position << ": " << move_piece << "/" << capture_piece << " -- " << castle << "\n";
+  std::cout << "0x" << std::hex << from_position << " -> " << "0x" << std::hex << to_position << ": " << move_piece << "/" << capture_piece << " -- " << castle << "\n" << std::dec;
 }
 
 #endif // END GUARD

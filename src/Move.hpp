@@ -11,6 +11,7 @@ class Move {
 public:
   // Constructors:
   Move(bitboard from, bitboard to, BoardConstants::PIECE move_p, BoardConstants::PIECE capture_p, bool is_castle);
+  Move(bitboard from, bitboard to, BoardConstants::PIECE move_p, BoardConstants::PIECE capture_p, BoardConstants::PIECE promotion_p);
 
   // Getters:
   /**
@@ -32,6 +33,11 @@ public:
    * Returns the capture piece;
    */
   BoardConstants::PIECE get_capture_piece();
+
+  /**
+   * Returns the promotion piece.
+   */
+  BoardConstants::PIECE get_promotion_piece();
 
   /**
    * Returns true if move is castle, false otherwise;
@@ -56,6 +62,7 @@ private:
   bitboard to_position;
   BoardConstants::PIECE move_piece;
   BoardConstants::PIECE capture_piece;
+  BoardConstants::PIECE promotion_piece;
   bool castle;
 };
 
