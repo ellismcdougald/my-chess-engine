@@ -5,6 +5,15 @@
 #include "../Board.hpp"
 #include "../MoveGenerator.hpp"
 
+void print_bb(bitboard bb) {
+  bitboard mask = (bitboard) 1 << 63;
+  for(int i = 0; i < 64; i++) {
+    std::cout << (mask & bb ? 1 : 0);
+    mask >>= 1;
+    if((i + 1) % 8 == 0) std::cout << "\n";
+  }
+}
+
 bool move_vector_contains(Move &move, std::vector<Move> move_vector) {
   for(int i = 0; i < move_vector.size(); i++) {
     if(move.move_equals(move_vector[i])) return true;
@@ -64,6 +73,21 @@ TEST_CASE("append_pawn_pseudo_legal_moves works properly", "[pawn pseudo legal]"
     REQUIRE(move_vector_contains(black_expected_move_one, pawn_pseudo_legal_moves_black) == true);
     REQUIRE(move_vector_contains(black_expected_move_two, pawn_pseudo_legal_moves_black) == true);
     REQUIRE(pawn_pseudo_legal_moves_black.size() == 2);
+  }
+
+  SECTION("pawn pseudo legal moves pawn on h3") {
+    board.initialize_board_starting_position();
+    Move move(0x100, 0x10000, BoardConstants::PAWN, BoardConstants::NONE, false);
+    board.execute_move(move, BoardConstants::WHITE);
+
+    print_bb(board.get_piece_positions(BoardConstants::PAWN, BoardConstants::WHITE));
+
+    std::vector<Move> pawn_pseudo_legal_moves_white;
+    move_gen.append_pawn_pseudo_legal_moves(pawn_pseudo_legal_moves_white, board, BoardConstants::WHITE);
+
+    print_move_vector(pawn_pseudo_legal_moves_white);
+
+    REQUIRE(pawn_pseudo_legal_moves_white.size() == 15);
   }
 }
 
