@@ -89,6 +89,14 @@ public:
   // Printers:
   void print_bitboard(bitboard bb);
 
+  // Debugging:
+  /**
+   * Perft function.
+   * Walks through legal move tree and counts all moves to a certain depth.
+   * See more: https://www.chessprogramming.org/Perft
+   */
+  uint64_t perft(int depth, Board &board, BoardConstants::COLOR color);
+
 private:
   /**
    * Receives bitboard encoding the destination squares, a start position, the move piece, whether or not the move is a capture, and a move vector. Generates a move for each destination and appends to the given move vector.

@@ -113,7 +113,7 @@ void MoveGenerator::append_legal_castle_moves(std::vector<Move> &legal_castle_mo
     castle_path_position = board.get_piece_positions(BoardConstants::KING, color);
     for(int i = 0; i < 2; i++) {
       castle_path_position >>= 1;
-      if(board.get_attacks_to_position(castle_path_position, other_color)) {
+      if(board.get_attacks_to_position(castle_path_position, other_color) || (board.get_all_piece_positions(color) & castle_path_position)) {
 	can_castle_king = false;
 	break;
       }
@@ -124,7 +124,8 @@ void MoveGenerator::append_legal_castle_moves(std::vector<Move> &legal_castle_mo
     castle_path_position = board.get_piece_positions(BoardConstants::KING, color);
     for(int i = 0; i < 3; i++) {
       castle_path_position <<= 1;
-      if(board.get_attacks_to_position(castle_path_position, other_color)) {
+      if(board.get_attacks_to_position(castle_path_position, other_color) ||
+	 (board.get_all_piece_positions(color) & castle_path_position)) {
 	can_castle_queen = false;
 	break;
       }
@@ -182,6 +183,32 @@ void MoveGenerator::print_bitboard(bitboard bb) {
   }
 }
 
+// Debugging:
+uint64_t MoveGenerator::perft(int depth, Board &board, BoardConstants::COLOR color) {
+  uint64_t nodes = 0;
+
+  if(depth == 0) return 1;
+    
+  std::vector<Move> legal_moves = generate_legal_moves(board, color);
+  int n_moves = legal_moves.size();
+
+  int temp_num;
+
+  for(int i = 0; i < n_moves; i++) {
+    //if(depth == 2) legal_moves[i].print_move_hex();
+    legal_moves[i].print_move_hex();
+    board.execute_move(legal_moves[i], color);
+    temp_num = perft(depth - 1, board, color);
+
+    //if(depth == 2) std::cout << std::dec << temp_num << "\n";
+    
+    nodes += temp_num;
+    board.undo_move(legal_moves[i], color);
+  }
+    
+  return nodes;
+}
+
 // Helpers:
 /**
  * For each set bit in destinations, creates the appropriate move and appends to the move vector.
@@ -193,8 +220,23 @@ void MoveGenerator::append_non_castle_moves_from_destinations(bitboard destinati
     temp_position = destinations & mask;
     if(temp_position) {
       capture_piece = capture ? board.get_piece_at_position(temp_position, color == BoardConstants::WHITE ? BoardConstants::BLACK : BoardConstants::WHITE) : BoardConstants::NONE;
-      Move move(start_position, temp_position, move_piece, capture_piece, false);
-      move_vector.push_back(move);
+
+      if((color == BoardConstants::WHITE && (temp_position & 0xFF00000000000000)) || (color == BoardConstants::BLACK && (temp_position & 0xFF))) {
+	
+	Move pawn_promotion(start_position, temp_position, move_piece, capture_piece, BoardConstants::PAWN);
+	move_vector.push_back(pawn_promotion);
+	Move knight_promotion(start_position, temp_position, move_piece, capture_piece, BoardConstants::KNIGHT);
+	move_vector.push_back(knight_promotion);
+	Move bishop_promotion(start_position, temp_position, move_piece, capture_piece, BoardConstants::BISHOP);
+	move_vector.push_back(bishop_promotion);
+	Move rook_promotion(start_position, temp_position, move_piece, capture_piece, BoardConstants::ROOK);
+	move_vector.push_back(rook_promotion);
+	Move queen_promotion(start_position, temp_position, move_piece, capture_piece, BoardConstants::QUEEN);
+	move_vector.push_back(queen_promotion);
+      } else {
+	Move move(start_position, temp_position, move_piece, capture_piece, false);
+	move_vector.push_back(move);
+      }
     }
   }
 }
