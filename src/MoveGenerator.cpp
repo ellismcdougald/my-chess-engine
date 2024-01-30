@@ -57,17 +57,21 @@ std::vector<Move> MoveGenerator::generate_pseudo_legal_moves(Board &board, Board
 /**
  * Receives a bitboard encoding the positions of the pawns. For each pawn, get eligible single push positions, double push positions, and attack positions (using Board methods and other piece locations). Then calls generate_pseudo_legal_en_passant_moves and appends these moves.
  */
-void  MoveGenerator::append_pawn_pseudo_legal_moves(std::vector<Move> &pawn_pseudo_legal_moves, Board &board, BoardConstants::COLOR color) {
+void MoveGenerator::append_pawn_pseudo_legal_moves(std::vector<Move> &pawn_pseudo_legal_moves, Board &board, BoardConstants::COLOR color) {
   bitboard pawn_positions = board.get_piece_positions(BoardConstants::PAWN, color);
+  bitboard other_piece_positions = board.get_all_piece_positions(color);
   bitboard opponent_positions = board.get_all_piece_positions(color == BoardConstants::WHITE ? BoardConstants::BLACK : BoardConstants::WHITE);
   
-  bitboard push_destinations, attack_destinations;
+  bitboard push_destinations, attack_destinations, single_push_destinations, double_push_destinations;
   bitboard temp_position;
   for(bitboard mask = 1; mask > 0; mask <<= 1) {
     temp_position = pawn_positions & mask;
     if(temp_position) {
-      // pushes
-      push_destinations = board.get_pawn_single_push(temp_position, color) | board.get_pawn_double_push(temp_position, color) & ~opponent_positions;
+      single_push_destinations = board.get_pawn_single_push(temp_position, color) & ~opponent_positions & ~other_piece_positions;
+      BoardConstants::DIRECTION push_direction = (color == BoardConstants::WHITE ? BoardConstants::NORTH : BoardConstants::SOUTH);
+      double_push_destinations = (board.get_pawn_double_push(temp_position, color) & board.move_direction(single_push_destinations, push_direction)) & ~opponent_positions & ~other_piece_positions;
+      push_destinations = single_push_destinations | double_push_destinations;
+      
       append_non_castle_moves_from_destinations(push_destinations, temp_position, BoardConstants::PAWN, false, pawn_pseudo_legal_moves, board, color);
       // attacks
       attack_destinations = board.get_pawn_attacks(temp_position, color) & opponent_positions;
@@ -192,21 +196,40 @@ uint64_t MoveGenerator::perft(int depth, Board &board, BoardConstants::COLOR col
   std::vector<Move> legal_moves = generate_legal_moves(board, color);
   int n_moves = legal_moves.size();
 
-  int temp_num;
+  BoardConstants::COLOR other_color = (color == BoardConstants::WHITE ? BoardConstants::BLACK : BoardConstants::WHITE);
 
   for(int i = 0; i < n_moves; i++) {
-    //if(depth == 2) legal_moves[i].print_move_hex();
-    legal_moves[i].print_move_hex();
     board.execute_move(legal_moves[i], color);
-    temp_num = perft(depth - 1, board, color);
-
-    //if(depth == 2) std::cout << std::dec << temp_num << "\n";
-    
-    nodes += temp_num;
+    nodes += perft(depth - 1, board, other_color);
     board.undo_move(legal_moves[i], color);
   }
     
   return nodes;
+}
+
+uint64_t MoveGenerator::divide(int depth, Board &board, BoardConstants::COLOR color) {
+  if(depth == 0) {
+    return 1;
+  }
+
+  std::vector<Move> legal_moves = generate_legal_moves(board, color);
+  uint64_t num_moves = legal_moves.size();
+
+  BoardConstants::COLOR other_color = (color == BoardConstants::WHITE ? BoardConstants::BLACK : BoardConstants::WHITE);
+
+  uint64_t nodes, node_total;
+  for(uint64_t i = 0; i < num_moves; i++) {
+    board.execute_move(legal_moves[i], color);
+    nodes = perft(depth - 1, board, other_color);
+    legal_moves[i].print_move_hex();
+    std::cout << nodes << "\n";
+    node_total += nodes;
+    board.undo_move(legal_moves[i], color);
+  }
+
+  std::cout << "Total Nodes: " << node_total << "\n";
+  std::cout << "Total Moves: " << num_moves << "\n";
+  return num_moves;
 }
 
 // Helpers:
