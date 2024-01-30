@@ -156,7 +156,7 @@ void Board::execute_move(Move &move, BoardConstants::COLOR color) {
   if(move_is_castle) {
     execute_castle_move(move, color);
   } else {
-    undo_castle_move(move, color);
+    execute_non_castle_move(move, color);
   }
 
   update_castle_rights(move, color);
@@ -176,7 +176,7 @@ void Board::undo_move(Move &move, BoardConstants::COLOR color) {
   if(move_is_castle) {
     undo_castle_move(move, color);
   } else {
-    undo_castle_move(move, color);
+    undo_non_castle_move(move, color);
   }
 
   reverse_update_castle_rights();
