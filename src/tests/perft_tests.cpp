@@ -20,16 +20,25 @@ TEST_CASE("starting position") {
     uint64_t result = move_gen.perft(1, board, BoardConstants::WHITE);
     REQUIRE(result == 20);
   }
-  */
 
-  /*
-  SECTION("perft after pawn push h2 to h3") {
-    Move move(0x100, 0x10000, BoardConstants::PAWN, BoardConstants::NONE, false);
-    board.execute_move(move, BoardConstants::WHITE);
+  SECTION("depth 2") {
+    uint64_t result = move_gen.perft(2, board, BoardConstants::WHITE);
+    REQUIRE(result == 400);
+  }
 
-    uint64_t result = move_gen.perft(1, board, BoardConstants::WHITE);
-    std::cout << result << "\n";
+  SECTION("depth 3") {
+    uint64_t result = move_gen.perft(3, board, BoardConstants::WHITE);
+    REQUIRE(result == 8902);
+  }
+
+  SECTION("depth 4") {
+    uint64_t result = move_gen.perft(4, board, BoardConstants::WHITE);
+    REQUIRE(result == 197281);
   }
   */
 
+  SECTION("depth 5") {
+    uint64_t result = move_gen.divide(5, board, BoardConstants::WHITE);
+    REQUIRE(result == 4865609);
+  }
 }
