@@ -96,6 +96,7 @@ public:
    * See more: https://www.chessprogramming.org/Perft
    */
   uint64_t perft(int depth, Board &board, BoardConstants::COLOR color);
+  uint64_t divide(int depth, Board &board, BoardConstants::COLOR color);
 
 private:
   /**
