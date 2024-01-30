@@ -31,6 +31,7 @@ TEST_CASE("append_pawn_pseudo_legal_moves works properly", "[pawn pseudo legal]"
   Board board;
   MoveGenerator move_gen;
 
+  
   SECTION("single white pawn on otherwise white board") {
     board.set_piece_positions(BoardConstants::PAWN, BoardConstants::WHITE, 0x800);
 
@@ -80,16 +81,13 @@ TEST_CASE("append_pawn_pseudo_legal_moves works properly", "[pawn pseudo legal]"
     Move move(0x100, 0x10000, BoardConstants::PAWN, BoardConstants::NONE, false);
     board.execute_move(move, BoardConstants::WHITE);
 
-    print_bb(board.get_piece_positions(BoardConstants::PAWN, BoardConstants::WHITE));
-
     std::vector<Move> pawn_pseudo_legal_moves_white;
     move_gen.append_pawn_pseudo_legal_moves(pawn_pseudo_legal_moves_white, board, BoardConstants::WHITE);
-
-    print_move_vector(pawn_pseudo_legal_moves_white);
 
     REQUIRE(pawn_pseudo_legal_moves_white.size() == 15);
   }
 }
+
 
 TEST_CASE("append_pseudo_legal_en_passant_moves works properly", "[en passant]") {
   Board board;
@@ -102,13 +100,9 @@ TEST_CASE("append_pseudo_legal_en_passant_moves works properly", "[en passant]")
     Move pawn_push(0x800, 0x8000000, BoardConstants::PAWN, BoardConstants::NONE, false);
     board.execute_move(pawn_push, BoardConstants::WHITE);
 
-    /*
-    std::vector<Move> black_en_passant_pseudo_legal_moves = move_gen.generate_pseudo_legal_en_passant_moves(board, BoardConstants::BLACK);
-    */
-
+    
     std::vector<Move> black_en_passant_pseudo_legal_moves;
     move_gen.append_pseudo_legal_en_passant_moves(black_en_passant_pseudo_legal_moves, board, BoardConstants::BLACK);
-    
 
     Move expected_move_one(0x10000000, 0x80000, BoardConstants::PAWN, BoardConstants::PAWN, false);
     Move expected_move_two(0x4000000, 0x80000, BoardConstants::PAWN, BoardConstants::PAWN, false);
@@ -122,9 +116,9 @@ TEST_CASE("append_pseudo_legal_en_passant_moves works properly", "[en passant]")
     board.set_piece_positions(BoardConstants::PAWN, BoardConstants::WHITE, 0x8000000);
     board.set_piece_positions(BoardConstants::PAWN, BoardConstants::WHITE, 0x10000000);
 
-    /*
-    std::vector<Move> black_en_passant_pseudo_legal_moves = move_gen.generate_pseudo_legal_en_passant_moves(board, BoardConstants::BLACK);
-    */
+    
+   // std::vector<Move> black_en_passant_pseudo_legal_moves = move_gen.generate_pseudo_legal_en_passant_moves(board, BoardConstants::BLACK);
+    
 
     std::vector<Move> black_en_passant_pseudo_legal_moves;
     move_gen.append_pseudo_legal_en_passant_moves(black_en_passant_pseudo_legal_moves, board, BoardConstants::BLACK);
