@@ -190,6 +190,13 @@ public:
    */
   bitboard get_attacks_to_position(bitboard position, BoardConstants::COLOR color);
 
+  // Board movement:
+  inline bitboard north(bitboard position) { return (position & ~RANK_8) << 8; }
+  inline bitboard south(bitboard position) { return (position & ~RANK_1) >> 8; }
+  inline bitboard east(bitboard position) { return (position & ~FILE_H) >> 1; }
+  inline bitboard west(bitboard position) { return (position & ~FILE_A) << 1; }
+  bitboard move_direction(bitboard position, BoardConstants::DIRECTION direction);
+
 private:
   std::array<bitboard, 6> white_bitboards;
   std::array<bitboard, 6> black_bitboards;
@@ -224,11 +231,6 @@ private:
   static const bitboard black_kingside_castle_king_position;
   static const bitboard black_kingside_castle_rook_position;
 
-  inline bitboard north(bitboard position) { return (position & ~RANK_8) << 8; }
-  inline bitboard south(bitboard position) { return (position & ~RANK_1) >> 8; }
-  inline bitboard east(bitboard position) { return (position & ~FILE_H) >> 1; }
-  inline bitboard west(bitboard position) { return (position & ~FILE_A) << 1; }
-
   /*
    * can_castle[0][0]: white queen side
    * can_castle[0][1]: white king side
@@ -251,7 +253,6 @@ private:
   std::map<bitboard, bitboard> king_moves_lookup;
 
   // Helpers:
-  bitboard move_direction(bitboard position, BoardConstants::DIRECTION direction);
   BoardConstants::PIECE get_piece_from_index(int index);
 
   // Initialize Lookup Tables:
